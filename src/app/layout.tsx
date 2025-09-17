@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
-
+import AllProviders from "@/redux/AllProviders";
 // English font: Roboto
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -29,14 +29,14 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
+
 }>) {
   return (
     <html lang="en">
       <body
         className={`${roboto.variable} ${hindSiliguri.variable} antialiased`}
       >
-
-        {children}
+        <AllProviders>{children}</AllProviders>
       </body>
     </html>
   );
