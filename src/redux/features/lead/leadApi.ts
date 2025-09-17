@@ -2,7 +2,7 @@ import baseApi from "@/redux/api/baseApi";
 
 export const leadApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation({
+    createLead: builder.mutation({
       query: (userInfo) => ({
         url: "/lead/create",
         method: "POST",
@@ -12,4 +12,4 @@ export const leadApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation } = leadApi;
+export const { useCreateLeadMutation } = leadApi;

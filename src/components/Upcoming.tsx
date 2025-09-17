@@ -159,7 +159,7 @@ export default function UnderConstruction() {
         </motion.div>
 
         {/* Email Notification Section */}
-        <motion.div
+        {/* <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.8 }}
@@ -188,7 +188,7 @@ export default function UnderConstruction() {
               Notify Me
             </motion.button>
           </motion.div>
-        </motion.div>
+        </motion.div> */}
 
         {/* Infinite progress bar */}
         <motion.div

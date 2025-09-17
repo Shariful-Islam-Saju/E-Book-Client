@@ -1,86 +1,266 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { motion,  } from "framer-motion";
 import { useGetSingleFileQuery } from "@/redux/features/file/fileApi";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { motion } from "framer-motion";
+import { TEBook } from "@/types";
 
-const EBooksPage = () => {
+import {
+  Star,
+  Eye,
+  Users,
+  ArrowRight,
+  CheckCircle,
+} from "lucide-react";
+
+import Reviews from "./Reviews";
+import LeadForm from "./LeadForm";
+import DownloadCounter from "./DownloadCounter";
+
+const EBooksPage: React.FC = () => {
   const params = useParams();
   let id = params?.id;
-  if (Array.isArray(id)) {
-    id = id[0];
-  }
+  if (Array.isArray(id)) id = id[0];
 
-  // Only fetch if id exists
-  const {
-    data: file,
-    isLoading,
-    isError,
-  } = useGetSingleFileQuery(id ?? "");
+  const { data: rawFile, isLoading, isError } = useGetSingleFileQuery(id ?? "");
+  const file: TEBook | null = rawFile?.data ?? null;
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-  if (!id) {
-    return <div>No file ID provided</div>;
-  }
+  useEffect(() => {
+    if (file?.coverImage) {
+      const img = new Image();
+      img.src = file.coverImage;
+      img.onload = () => setImageLoaded(true);
+    }
+  }, [file]);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Skeleton className="w-96 h-48 rounded-lg" />
-      </div>
-    );
-  }
-
-  if (isError || !file) {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-screen text-center">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-2xl font-semibold text-slate-700"
-        >
-          No file found
-        </motion.div>
-      </div>
-    );
-  }
+  if (!id) return <div>No file ID provided.</div>;
+  if (isLoading) return <EbookPageSkeleton />;
+  if (isError || !file) return <div>No file found.</div>;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="flex justify-center p-4"
-    >
-      <Card className="w-full max-w-2xl shadow-lg border border-slate-700 bg-slate-800">
-        <CardHeader>
-          <CardTitle className="text-2xl text-white">{file.title}</CardTitle>
-          <CardDescription className="text-slate-300">
-            {file.description}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="mt-4 text-slate-200">
-          <p>
-            <strong>Author:</strong> {file.author || "Unknown"}
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-8 px-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Hero Section */}
+        <section className="flex flex-col lg:flex-row gap-8 items-center mb-16">
+          <motion.div
+            className="flex-1"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.div
+              className="bg-white rounded-2xl shadow-xl p-6 mb-6"
+              whileHover={{ y: -5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <span className="inline-block px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full mb-4">
+                Bestseller
+              </span>
+              <h1 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-4 leading-tight">
+                {file.title}
+              </h1>
+              <p className="text-lg text-slate-600 mb-6 leading-relaxed">
+                {file.description || "No description available."}
+              </p>
+
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={20}
+                      className="fill-yellow-400 text-yellow-400"
+                    />
+                  ))}
+                  <span className="ml-2 text-slate-700 font-medium">4.8</span>
+                </div>
+                <div className="flex items-center text-slate-500">
+                  <Eye size={18} className="mr-1" />
+                  <DownloadCounter ebookId={file.id} />
+                </div>
+              </div>
+
+              <motion.a
+                href={file.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center px-5 py-3 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-900 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Preview PDF
+                <ArrowRight size={18} className="ml-2" />
+              </motion.a>
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            className="flex-1 flex justify-center"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <div className="relative w-full max-w-md">
+              <motion.div
+                className="absolute inset-0 bg-blue-200 rounded-2xl transform rotate-3"
+                animate={{ rotate: 3 }}
+              />
+              <motion.div
+                className="absolute inset-0 bg-blue-100 rounded-2xl transform -rotate-3"
+                animate={{ rotate: -3 }}
+              />
+              <motion.img
+                src={file.coverImage || "/placeholder-ebook.png"}
+                alt={file.title}
+                className="relative rounded-2xl shadow-2xl w-full h-auto object-cover"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.7, delay: 0.3 }}
+                onLoad={() => setImageLoaded(true)}
+              />
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Key Features */}
+        <motion.section
+          className="mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-3xl font-bold text-center text-slate-800 mb-12">
+            What You'll Learn
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              "Comprehensive guide covering all aspects",
+              "Practical examples and case studies",
+              "Actionable strategies you can implement immediately",
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                className="bg-white p-6 rounded-xl shadow-md border border-slate-100"
+                whileHover={{
+                  y: -5,
+                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
+                }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                  <CheckCircle className="text-blue-600" size={24} />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-2">
+                  Feature {index + 1}
+                </h3>
+                <p className="text-slate-600">{feature}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* Download Form Section */}
+        <motion.section
+          className="mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
+            <div className="flex flex-col lg:flex-row">
+              <div className="lg:w-2/5 p-8 flex flex-col justify-center">
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  Get Your Free Copy Now
+                </h2>
+                <p className="text-blue-100 mb-6">
+                  Join thousands of readers who have already downloaded this
+                  ebook and transformed their skills.
+                </p>
+                <div className="flex items-center text-white mb-4">
+                  <Users size={20} className="mr-2" />
+                  <span className="font-medium">
+                    1,200+ downloads this week
+                  </span>
+                </div>
+                <ul className="space-y-2 text-blue-100">
+                  <li className="flex items-center">
+                    <CheckCircle size={18} className="mr-2 text-green-300" />
+                    Instant download after submission
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle size={18} className="mr-2 text-green-300" />
+                    No spam, we promise
+                  </li>
+                </ul>
+              </div>
+              <div className="lg:w-3/5 bg-white p-8">
+                <LeadForm ebookId={file.id} downloadUrl={file.url} />
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Reviews Section */}
+        <motion.section
+          className="mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <h2 className="text-3xl font-bold text-center text-slate-800 mb-4">
+            What Readers Are Saying
+          </h2>
+          <p className="text-center text-slate-600 mb-12 max-w-2xl mx-auto">
+            Discover why thousands of readers have made this ebook their go-to
+            resource.
           </p>
-          <p>
-            <strong>Published:</strong> {file.publishedAt || "N/A"}
-          </p>
-          <p>
-            <strong>Category:</strong> {file.category || "N/A"}
-          </p>
-        </CardContent>
-      </Card>
-    </motion.div>
+
+          <Reviews reviews={file.reviews ?? []} />
+        </motion.section>
+      </div>
+    </div>
+  );
+};
+
+const EbookPageSkeleton = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-8 px-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-8 items-center mb-16">
+          <div className="flex-1">
+            <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+              <div className="h-6 w-24 bg-slate-200 rounded-full mb-4"></div>
+              <div className="h-12 bg-slate-200 rounded mb-4"></div>
+              <div className="h-4 bg-slate-200 rounded mb-2"></div>
+              <div className="h-4 bg-slate-200 rounded mb-2"></div>
+              <div className="h-4 bg-slate-200 rounded w-3/4 mb-6"></div>
+
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center">
+                  <div className="h-5 w-20 bg-slate-200 rounded"></div>
+                </div>
+                <div className="h-5 w-32 bg-slate-200 rounded"></div>
+              </div>
+
+              <div className="h-12 w-40 bg-slate-200 rounded-lg"></div>
+            </div>
+          </div>
+
+          <div className="flex-1 flex justify-center">
+            <div className="relative w-full max-w-md">
+              <div className="absolute inset-0 bg-blue-200 rounded-2xl transform rotate-3"></div>
+              <div className="absolute inset-0 bg-blue-100 rounded-2xl transform -rotate-3"></div>
+              <div className="relative rounded-2xl shadow-2xl w-full h-80 bg-slate-200"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
