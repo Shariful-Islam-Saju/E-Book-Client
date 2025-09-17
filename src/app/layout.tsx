@@ -17,7 +17,10 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 export const metadata: Metadata = {
-  title: "DS Ebook",
+  title: {
+    default: "DS EBooks", // fallback / root title
+    template: "%s | DS EBooks", // %s will be replaced by page-specific title
+  },
   description:
     "DS Ebook is your go-to platform for managing, reading, and exploring digital ebooks efficiently in both English and Bangla.",
 };
@@ -32,7 +35,7 @@ export default function RootLayout({
       <body
         className={`${roboto.variable} ${hindSiliguri.variable} antialiased`}
       >
-        
+
         {children}
       </body>
     </html>
