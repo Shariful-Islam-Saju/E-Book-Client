@@ -1,22 +1,32 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { motion,  } from "framer-motion";
-import { useGetSingleFileQuery } from "@/redux/features/file/fileApi";
-import { TEBook } from "@/types";
+import { motion } from "framer-motion";
+import {
+  useGetSingleFileQuery,
 
+} from "@/redux/features/file/fileApi";
+import { TLead, TEBook, TReview } from "@/types";
 import {
   Star,
   Eye,
   Users,
   ArrowRight,
   CheckCircle,
+  DownloadCloud,
+  AlertCircle,
+  User,
+  BookOpen,
+  Clock,
+  Award,
 } from "lucide-react";
-
-import Reviews from "./Reviews";
-import LeadForm from "./LeadForm";
-import DownloadCounter from "./DownloadCounter";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { useCreateLeadMutation } from "@/redux/features/lead/leadApi";
 
 const EBooksPage: React.FC = () => {
   const params = useParams();
@@ -35,9 +45,19 @@ const EBooksPage: React.FC = () => {
     }
   }, [file]);
 
-  if (!id) return <div>No file ID provided.</div>;
+  if (!id)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        No file ID provided.
+      </div>
+    );
   if (isLoading) return <EbookPageSkeleton />;
-  if (isError || !file) return <div>No file found.</div>;
+  if (isError || !file)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        No file found.
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-8 px-4">
@@ -51,7 +71,7 @@ const EBooksPage: React.FC = () => {
             transition={{ duration: 0.5 }}
           >
             <motion.div
-              className="bg-white rounded-2xl shadow-xl p-6 mb-6"
+              className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-slate-100"
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
@@ -65,7 +85,7 @@ const EBooksPage: React.FC = () => {
                 {file.description || "No description available."}
               </p>
 
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex flex-wrap items-center gap-4 mb-6">
                 <div className="flex items-center">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
@@ -79,6 +99,10 @@ const EBooksPage: React.FC = () => {
                 <div className="flex items-center text-slate-500">
                   <Eye size={18} className="mr-1" />
                   <DownloadCounter ebookId={file.id} />
+                </div>
+                <div className="flex items-center text-slate-500">
+                  <BookOpen size={18} className="mr-1" />
+                  <span>{Math.floor(Math.random() * 100) + 150} pages</span>
                 </div>
               </div>
 
@@ -112,7 +136,7 @@ const EBooksPage: React.FC = () => {
                 animate={{ rotate: -3 }}
               />
               <motion.img
-                src={file.coverImage || "/placeholder-ebook.png"}
+                src={"/placeholder-ebook.png"}
                 alt={file.title}
                 className="relative rounded-2xl shadow-2xl w-full h-auto object-cover"
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -124,43 +148,7 @@ const EBooksPage: React.FC = () => {
           </motion.div>
         </section>
 
-        {/* Key Features */}
-        <motion.section
-          className="mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-3xl font-bold text-center text-slate-800 mb-12">
-            What You'll Learn
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              "Comprehensive guide covering all aspects",
-              "Practical examples and case studies",
-              "Actionable strategies you can implement immediately",
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                className="bg-white p-6 rounded-xl shadow-md border border-slate-100"
-                whileHover={{
-                  y: -5,
-                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
-                }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-                  <CheckCircle className="text-blue-600" size={24} />
-                </div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-2">
-                  Feature {index + 1}
-                </h3>
-                <p className="text-slate-600">{feature}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
+
 
         {/* Download Form Section */}
         <motion.section
@@ -195,6 +183,10 @@ const EBooksPage: React.FC = () => {
                     <CheckCircle size={18} className="mr-2 text-green-300" />
                     No spam, we promise
                   </li>
+                  <li className="flex items-center">
+                    <CheckCircle size={18} className="mr-2 text-green-300" />
+                    Premium content at no cost
+                  </li>
                 </ul>
               </div>
               <div className="lg:w-3/5 bg-white p-8">
@@ -227,6 +219,251 @@ const EBooksPage: React.FC = () => {
   );
 };
 
+// Lead Form Component
+interface LeadFormProps {
+  ebookId: string;
+  downloadUrl?: string;
+}
+
+const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
+  const [lead, setLead] = useState<TLead>({
+    name: "",
+    mobile: "",
+    address: "",
+    ebookId,
+  });
+  const [createLead, { isLoading }] = useCreateLeadMutation();
+  const [message, setMessage] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setLead((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage(null);
+
+    try {
+      await createLead({ ...lead, ebookId }).unwrap();
+      setMessage({
+        text: "Success! Your download will start shortly.",
+        type: "success",
+      });
+      if (downloadUrl) {
+        setTimeout(() => {
+          window.open(downloadUrl, "_blank");
+        }, 1500);
+      } else {
+        setMessage({ text: "Download URL not available.", type: "error" });
+      }
+    } catch (err: any) {
+      setMessage({
+        text: err?.data?.message || err?.message || "Something went wrong",
+        type: "error",
+      });
+    }
+  };
+
+  return (
+    <div>
+      <h3 className="text-xl font-semibold text-slate-800 mb-6">
+        Fill out the form to download
+      </h3>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Full Name *
+          </label>
+          <input
+            name="name"
+            value={lead.name}
+            onChange={onChange}
+            required
+            className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            placeholder="Enter your full name"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Mobile Number *
+          </label>
+          <input
+            name="mobile"
+            value={lead.mobile}
+            onChange={onChange}
+            required
+            className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            placeholder="Enter your mobile number"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Address (Optional)
+          </label>
+          <textarea
+            name="address"
+            value={lead.address}
+            onChange={onChange}
+            rows={3}
+            className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            placeholder="Enter your address"
+          />
+        </div>
+        <motion.button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 shadow-md"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <DownloadCloud size={20} />
+          {isLoading ? "Processing..." : "Download Now"}
+        </motion.button>
+      </form>
+
+      {message && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`mt-4 p-4 rounded-lg flex items-start gap-3 ${
+            message.type === "success"
+              ? "bg-green-50 text-green-800 border border-green-200"
+              : "bg-red-50 text-red-800 border border-red-200"
+          }`}
+        >
+          {message.type === "success" ? (
+            <CheckCircle size={20} className="mt-0.5 flex-shrink-0" />
+          ) : (
+            <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
+          )}
+          <p className="text-sm">{message.text}</p>
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+// Reviews Component
+interface ReviewsProps {
+  reviews: TReview[];
+}
+
+const Reviews: React.FC<ReviewsProps> = ({ reviews }) => {
+  if (!reviews.length) {
+    return (
+      <motion.div
+        className="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-200 rounded-full mb-4">
+          <Star className="text-slate-400" size={28} />
+        </div>
+        <h3 className="text-xl font-medium text-slate-700 mb-2">
+          No reviews yet
+        </h3>
+        <p className="text-slate-500">Be the first to leave a review!</p>
+      </motion.div>
+    );
+  }
+
+  return (
+    <div className="px-2">
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        spaceBetween={30}
+        slidesPerView={1}
+        breakpoints={{
+          640: {
+            slidesPerView: 1,
+          },
+          768: {
+            slidesPerView: 2,
+          },
+          1024: {
+            slidesPerView: 3,
+          },
+        }}
+        navigation
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 5000 }}
+        className="pb-12"
+      >
+        {reviews.map((review, index) => (
+          <SwiperSlide key={review.id}>
+            <motion.div
+              className="bg-white p-6 rounded-xl shadow-md h-full border border-slate-100"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              whileHover={{
+                y: -5,
+                boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <div className="flex items-center mb-4">
+                <div className="flex mr-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={16}
+                      className={
+                        star <= (review.rating || 5)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-slate-300"
+                      }
+                    />
+                  ))}
+                </div>
+                <span className="text-sm font-medium text-slate-700">
+                  {review.rating}/5
+                </span>
+              </div>
+
+              <h4 className="font-semibold text-slate-800 mb-2">
+                {review.title}
+              </h4>
+              <p className="text-slate-600 mb-4 text-sm">
+                {review.description}
+              </p>
+
+              <div className="flex items-center mt-4 pt-4 border-t border-slate-100">
+                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                  <User size={18} className="text-slate-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-800">
+                    {review.reviewBy || "Anonymous"}
+                  </p>
+                  {review.mobile && (
+                    <p className="text-xs text-slate-500">{review.mobile}</p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
+  );
+};
+
+// Download Counter Component
+const DownloadCounter: React.FC<{ ebookId: string }> = ({ ebookId }) => {
+  // This would typically come from an API
+  const [downloadCount] = useState(Math.floor(Math.random() * 10000) + 1000);
+
+  return <span>{downloadCount.toLocaleString()} downloads</span>;
+};
+
+// Skeleton Loader
 const EbookPageSkeleton = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-8 px-4">
