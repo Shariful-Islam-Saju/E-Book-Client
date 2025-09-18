@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Roboto, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
 import AllProviders from "@/redux/AllProviders";
+import { Toaster } from "sonner";
+
 // English font: Roboto
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -36,7 +38,16 @@ export default function RootLayout({
       <body
         className={`${roboto.variable} ${hindSiliguri.variable} antialiased`}
       >
-        <AllProviders>{children}</AllProviders>
+        <AllProviders>
+          {children}
+          <Toaster
+            position="bottom-right"
+            richColors
+            toastOptions={{
+              duration: 4000,
+            }}
+          />
+        </AllProviders>
       </body>
     </html>
   );

@@ -1,58 +1,89 @@
-import { useCreateLeadMutation } from "@/redux/features/lead/leadApi";
-import { TLead } from "@/types";
-import { AlertCircle, CheckCircle, DownloadCloud } from "lucide-react";
-import { useState } from "react";
-import { motion } from "framer-motion";
+"use client";
 
-// Lead Form Component
+import { useEffect, useState } from "react";
+import { useCreateLeadMutation } from "@/redux/features/lead/leadApi";
+import { DownloadCloud } from "lucide-react";
+import { motion } from "framer-motion";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+import { LeadFormSchema } from "@/schemas/LeadFormSchema";
+
+type LeadFormInputs = z.infer<typeof LeadFormSchema>;
+
 interface LeadFormProps {
   ebookId: string;
   downloadUrl?: string;
 }
 
-
 const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
-  const [lead, setLead] = useState<TLead>({
-    name: "",
-    mobile: "",
-    address: "",
-    ebookId,
-  });
   const [createLead, { isLoading }] = useCreateLeadMutation();
-  const [message, setMessage] = useState<{
-    text: string;
-    type: "success" | "error";
-  } | null>(null);
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(
+    null
+  );
 
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setLead((prev) => ({ ...prev, [name]: value }));
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<LeadFormInputs>({
+    resolver: zodResolver(LeadFormSchema),
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage(null);
+  const watchedMobile = watch("mobile");
+
+  // Hidden debounced API call for mobile
+  useEffect(() => {
+    if (!watchedMobile) return;
+
+    // Clear previous timeout
+    if (typingTimeout) clearTimeout(typingTimeout);
+
+    // Validate mobile number using Zod
+    const mobileSchema = LeadFormSchema.pick({ mobile: true });
+    const parsed = mobileSchema.safeParse({ mobile: watchedMobile });
+    if (!parsed.success) return; // invalid, skip API call
+
+    // Set new timeout
+    const timeout = setTimeout(async () => {
+      try {
+        await createLead({ mobile: watchedMobile, ebookId } as any).unwrap();
+        console.log("Mobile auto-saved (valid):", watchedMobile);
+      } catch (err) {
+        console.error("Hidden mobile API call error:", err);
+      }
+    }, 2000);
+
+    setTypingTimeout(timeout);
+
+    return () => clearTimeout(timeout);
+  }, [watchedMobile]);
+
+  const onSubmit = async (data: LeadFormInputs) => {
+    // Cancel any pending hidden API call
+    if (typingTimeout) clearTimeout(typingTimeout);
 
     try {
-      await createLead({ ...lead, ebookId }).unwrap();
-      setMessage({
-        text: "Success! Your download will start shortly.",
-        type: "success",
-      });
+      await createLead({ ...data, ebookId }).unwrap();
+
+      toast.success("Success! Your download will start shortly.");
+
       if (downloadUrl) {
-        setTimeout(() => {
-          window.open(downloadUrl, "_blank");
-        }, 1500);
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = downloadUrl.split("/").pop() || "file.pdf";
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       } else {
-        setMessage({ text: "Download URL not available.", type: "error" });
+        toast.error("Download URL not available.");
       }
     } catch (err: any) {
-      setMessage({
-        text: err?.data?.message || err?.message || "Something went wrong",
-        type: "error",
-      });
+      toast.error(err?.data?.message || err?.message || "Something went wrong");
+      console.error(err);
     }
   };
 
@@ -61,46 +92,53 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
       <h3 className="text-xl font-semibold text-slate-800 mb-6 w-full">
         Fill out the form to download
       </h3>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* Full Name */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            Full Name *
+            Full Name
           </label>
           <input
-            name="name"
-            value={lead.name}
-            onChange={onChange}
-            required
-            className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            type="text"
             placeholder="Enter your full name"
+            {...register("name")}
+            className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           />
+          {errors.name && (
+            <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
+          )}
         </div>
+
+        {/* Mobile */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Mobile Number *
           </label>
           <input
-            name="mobile"
-            value={lead.mobile}
-            onChange={onChange}
-            required
-            className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            type="text"
             placeholder="Enter your mobile number"
+            {...register("mobile")}
+            className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           />
+          {errors.mobile && (
+            <p className="text-sm text-red-500 mt-1">{errors.mobile.message}</p>
+          )}
         </div>
+
+        {/* Address */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Address (Optional)
           </label>
           <textarea
-            name="address"
-            value={lead.address}
-            onChange={onChange}
+            placeholder="Enter your address"
+            {...register("address")}
             rows={3}
             className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            placeholder="Enter your address"
           />
         </div>
+
+        {/* Submit Button */}
         <motion.button
           type="submit"
           disabled={isLoading}
@@ -112,28 +150,8 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           {isLoading ? "Processing..." : "Download Now"}
         </motion.button>
       </form>
-
-      {message && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`mt-4 p-4 rounded-lg flex items-start gap-3 ${
-            message.type === "success"
-              ? "bg-green-50 text-green-800 border border-green-200"
-              : "bg-red-50 text-red-800 border border-red-200"
-          }`}
-        >
-          {message.type === "success" ? (
-            <CheckCircle size={20} className="mt-0.5 flex-shrink-0" />
-          ) : (
-            <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
-          )}
-          <p className="text-sm">{message.text}</p>
-        </motion.div>
-      )}
     </div>
   );
 };
-
 
 export default LeadForm;

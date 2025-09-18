@@ -17,6 +17,7 @@ import Reviews from "./Reviews";
 import LeadForm from "./LeadForm";
 import EbookPageSkeleton from "./EbookPageSkeleton";
 import NoEbookFound from "./NoEbookFound";
+import DownloadCounter from "./DownloadCounter";
 
 const EBooksPage: React.FC = () => {
   const params = useParams();
@@ -108,7 +109,7 @@ const EBooksPage: React.FC = () => {
                       className="fill-yellow-400 text-yellow-400"
                     />
                   ))}
-                  <span className="ml-2 text-slate-700 font-medium">4.8</span>
+                  <span className="ml-2 text-slate-700 font-medium">5</span>
                 </div>
               </div>
 
@@ -135,11 +136,17 @@ const EBooksPage: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <div
-            className="bg-gradient-to-r rounded-2xl shadow-xl overflow-hidden"
+            className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden flex flex-col lg:flex-row"
             id="lead-form"
           >
-            <div className=" bg-white p-8">
+            {/* Lead Form */}
+            <div className="lg:w-2/3 bg-white p-8">
               <LeadForm ebookId={file.id} downloadUrl={file.url} />
+            </div>
+
+            {/* Download Counter */}
+            <div className="lg:w-1/3 bg-white p-8">
+              <DownloadCounter />
             </div>
           </div>
         </motion.section>
