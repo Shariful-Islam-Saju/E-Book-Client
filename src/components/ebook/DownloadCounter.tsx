@@ -12,7 +12,7 @@ const DownloadCounter: React.FC = () => {
       const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (stored) return parseInt(stored, 10);
     }
-    return Math.floor(Math.random() * (200000 - 10000 + 1)) + 10000;
+    return Math.floor(Math.random() * (150000 - 10000 + 1)) + 10000;
   };
 
   const [count, setCount] = useState(getInitialValue);
