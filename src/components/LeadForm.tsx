@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useCreateLeadMutation } from "@/redux/features/lead/leadApi";
 import { DownloadCloud } from "lucide-react";
 import { motion } from "framer-motion";
@@ -19,9 +19,7 @@ interface LeadFormProps {
 
 const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
   const [createLead, { isLoading }] = useCreateLeadMutation();
-  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(
-    null
-  );
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const {
     register,
@@ -33,37 +31,46 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
   });
 
   const watchedMobile = watch("mobile");
+  const watchedName = watch("name");
+  const watchedAddress = watch("address");
 
-  // Hidden debounced API call for mobile
+  // Hidden debounced API call for mobile (+ name + address)
   useEffect(() => {
     if (!watchedMobile) return;
 
-    // Clear previous timeout
-    if (typingTimeout) clearTimeout(typingTimeout);
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
     // Validate mobile number using Zod
     const mobileSchema = LeadFormSchema.pick({ mobile: true });
     const parsed = mobileSchema.safeParse({ mobile: watchedMobile });
-    if (!parsed.success) return; // invalid, skip API call
+    if (!parsed.success) return; // invalid mobile → skip API call
 
-    // Set new timeout
-    const timeout = setTimeout(async () => {
+    typingTimeoutRef.current = setTimeout(async () => {
       try {
-        await createLead({ mobile: watchedMobile, ebookId } as any).unwrap();
-        console.log("Mobile auto-saved (valid):", watchedMobile);
+        await createLead({
+          mobile: watchedMobile,
+          name: watchedName,
+          address: watchedAddress,
+          ebookId,
+        } as any).unwrap();
+
+        console.log("Auto-saved lead (valid mobile):", {
+          mobile: watchedMobile,
+          name: watchedName,
+          address: watchedAddress,
+        });
       } catch (err) {
-        console.error("Hidden mobile API call error:", err);
+        console.error("Hidden lead API call error:", err);
       }
     }, 2000);
 
-    setTypingTimeout(timeout);
-
-    return () => clearTimeout(timeout);
-  }, [watchedMobile]);
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
+  }, [watchedMobile, watchedName, watchedAddress, ebookId, createLead]);
 
   const onSubmit = async (data: LeadFormInputs) => {
-    // Cancel any pending hidden API call
-    if (typingTimeout) clearTimeout(typingTimeout);
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
     try {
       await createLead({ ...data, ebookId }).unwrap();
@@ -136,6 +143,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
             rows={3}
             className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           />
+        
         </div>
 
         {/* Submit Button */}

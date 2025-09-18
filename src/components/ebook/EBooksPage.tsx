@@ -5,16 +5,13 @@ import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { useGetSingleFileQuery } from "@/redux/features/file/fileApi";
 import { TEBook } from "@/types";
-import {
-  Star,
-  ArrowRight,
-} from "lucide-react";
+import { Star, ArrowRight } from "lucide-react";
 
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import Reviews from "./Reviews";
-import LeadForm from "./LeadForm";
+import Reviews from "../Reviews";
+import LeadForm from "../LeadForm";
 import EbookPageSkeleton from "./EbookPageSkeleton";
 import NoEbookFound from "./NoEbookFound";
 import DownloadCounter from "./DownloadCounter";
@@ -43,10 +40,7 @@ const EBooksPage: React.FC = () => {
       </div>
     );
   if (isLoading) return <EbookPageSkeleton />;
-  if (isError || !file)
-    return (
-     <NoEbookFound />
-    );
+  if (isError || !file) return <NoEbookFound />;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-8 px">

@@ -1,5 +1,5 @@
 import React from "react";
-import EBooksPage from "@/components/EBooksPage";
+import EBooksPage from "@/components/ebook/EBooksPage";
 
 // Static metadata
 export const metadata = {
@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 const Page = () => {
-  return <EBooksPage  />;
+  return <EBooksPage />;
 };
 
 export default Page;
