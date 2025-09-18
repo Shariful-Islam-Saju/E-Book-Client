@@ -3,7 +3,6 @@ export interface TEBook {
   title: string;
   description: string;
   url: string;
-  coverImage: string;
   reviews: TReview[];
   imgUrl?: string;
 }

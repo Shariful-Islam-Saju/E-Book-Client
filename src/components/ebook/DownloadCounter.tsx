@@ -59,10 +59,10 @@ const DownloadCounter: React.FC = () => {
               Downloads
             </p>
 
-            <div className="flex font-extrabold tracking-tight text-gray-900 text-[48px]">
+            <div className="flex items-center justify-between gap-4 font-extrabold tracking-tight text-gray-900 text-[25px]">
               <FlipNumbers
-                height={30} // size of the digits
-                width={30} // width of each digit
+                height={20} // size of the digits
+                width={20} // width of each digit
                 color="#111827" // dark color
                 background="transparent"
                 play
@@ -71,15 +71,15 @@ const DownloadCounter: React.FC = () => {
                 duration={5} // very slow
                 delay={0.1} // smooth flip
               />
+              <div className="flex items-center text-sm font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700 shadow-md animate-pulse">
+                <TrendingUp size={14} className="mr-1" />+
+                {Math.floor(Math.random() * 4) + 2}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Change indicator */}
-        <div className="flex items-center text-sm font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700 shadow-md animate-pulse">
-          <TrendingUp size={14} className="mr-1" />+
-          {Math.floor(Math.random() * 4) + 2}
-        </div>
       </div>
     </div>
   );

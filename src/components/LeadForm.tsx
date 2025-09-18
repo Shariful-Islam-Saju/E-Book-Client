@@ -95,13 +95,13 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
   };
 
   return (
-    <div>
+    <div className="z-50 relative">
       <h3 className="text-xl font-semibold text-slate-800 mb-6 w-full">
         Fill out the form to download
       </h3>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4  z-50">
         {/* Full Name */}
-        <div>
+        <div >
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Full Name
           </label>
@@ -143,7 +143,6 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
             rows={3}
             className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           />
-        
         </div>
 
         {/* Submit Button */}

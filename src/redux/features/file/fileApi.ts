@@ -4,15 +4,18 @@ import { TEBook } from "@/types";
 
 export const fileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // ---------------- GET SINGLE FILE ----------------
     getSingleFile: builder.query<TRes<TEBook>, string>({
       query: (id: string) => ({
         url: `/file/file-id/${id}`,
         method: "GET",
       }),
     }),
-
-    // ---------------- GET FILE BY NAME ----------------
+    getAllFiles: builder.query<TRes<TEBook[]>, string>({
+      query: (id: string) => ({
+        url: `/file`,
+        method: "GET",
+      }),
+    }),
     getFileByName: builder.query<TRes<TEBook>, string>({
       query: (title: string) => ({
         url: `/file/file-name/${title}`,
@@ -22,4 +25,4 @@ export const fileApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetSingleFileQuery, useGetFileByNameQuery } = fileApi;
+export const { useGetSingleFileQuery, useGetFileByNameQuery, useGetAllFilesQuery } = fileApi;

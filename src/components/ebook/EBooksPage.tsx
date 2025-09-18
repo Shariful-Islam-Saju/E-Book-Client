@@ -12,6 +12,7 @@ import EbookPageSkeleton from "./EbookPageSkeleton";
 import NoEbookFound from "./NoEbookFound";
 import DownloadCounter from "./DownloadCounter";
 import { yo } from "zod/v4/locales";
+import RandomBox from "../RandomBox";
 
 const EBooksPage: React.FC = () => {
   const params = useParams();
@@ -58,13 +59,12 @@ const EBooksPage: React.FC = () => {
     },
   };
 
-
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="min-h-screen relative bg-gradient-to-b from-slate-50 to-slate-100">
+      <RandomBox />
       {/* Hero Section */}
-      <section className="relative md:lg:mb-24 pb-5 isolate bg-[#2f3237]">
-        <div className="mx-auto max-w-6xl pt-16 lg:pt-24">
+      <section className=" z-50 md:lg:mb-24 pb-5 isolate bg-[#2f3237]">
+        <div className="mx-auto max-w-6xl pt-8">
           <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-2 lg:gap-16">
             {/* Image first for mobile */}
             <motion.div
@@ -79,7 +79,7 @@ const EBooksPage: React.FC = () => {
                   src={file?.imgUrl || "/placeholder-ebook.png"}
                   alt={file.title}
                   className="relative z-10 w-full object-cover"
-                  style={{ boxShadow: "4px 4px 12px rgba(0,0,0,0.6)" }}
+                  style={{ boxShadow: "12px 8px 8px rgba(0,0,0,0.6)" }}
                   decoding="async"
                   loading="eager"
                   initial={{ opacity: 0, scale: 0.9, y: yOffset }}
@@ -96,16 +96,12 @@ const EBooksPage: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.05 }}
               variants={fadeUpVariant}
             >
-              {" "}
-              <h1 className="text-4xl/[1.15] sm:text-5xl/[1.1] font-extrabold text-gray-100 tracking-tight mb-5">
-                {" "}
-                {file.title}{" "}
+              <h1 className="text-4xl/[1.15] px-5 md:px-0 sm:text-5xl/[1.1] font-extrabold text-gray-100 tracking-tight mb-5">
+                {file.title}
               </h1>{" "}
-              <p className="mb-8 text-base sm:text-lg px-5 text-justify text-gray-300 leading-relaxed">
-                {" "}
-                <span className=" ring-emerald-400/25 px-1.5 py-0.5">
-                  {" "}
-                  {file.description}{" "}
+              <p className="mb-8 text-base sm:text-lg px-5 md:px-0 text-justify text-gray-300 leading-relaxed">
+                <span className=" ring-emerald-400/25  py-0.5">
+                  {file.description}
                 </span>{" "}
               </p>{" "}
               {/* Redesigned button without input */}{" "}
@@ -115,16 +111,16 @@ const EBooksPage: React.FC = () => {
                   onClick={() => {
                     const el = document.querySelector("#lead-form");
                     if (el)
-                      el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      el.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
                   }}
-                  className="relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 px-8 py-4 font-semibold text-gray-900 shadow-lg hover:from-emerald-400 hover:to-emerald-500 transition-all"
+                  className="relative inline-flex items-center justify-center overflow-hidden rounded-md px-4 py-2 bg-[rgb(37,177,112)] text-white transition-all"
                 >
-                  {" "}
-                  <span className="absolute inset-0 bg-emerald-600 opacity-20 rounded-full"></span>{" "}
-                  <span className="relative flex items-center gap-2 font-bold text-xl">
-                    {" "}
-                    Download <ArrowRight className="h-4 w-4" />{" "}
-                  </span>{" "}
+                  <span className="relative flex items-center gap-2 font-bold text-lg">
+                    Download <ArrowRight className="h-4 w-4" />
+                  </span>
                 </button>{" "}
               </div>{" "}
             </motion.div>
@@ -134,14 +130,14 @@ const EBooksPage: React.FC = () => {
 
       {/* Lead Form + Download Counter */}
       <motion.section
-        className="mb-16 max-w-6xl mx-auto"
+        className="mb-16 max-w-6xl mx-auto  z-50"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
         variants={fadeUpVariant}
       >
         <div
-          className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden flex flex-col lg:flex-row"
+          className="bg-gradient-to-r  z-50  from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden flex flex-col lg:flex-row"
           id="lead-form"
         >
           <div className="lg:w-2/3 bg-white p-8">
