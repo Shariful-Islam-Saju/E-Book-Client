@@ -1,15 +1,15 @@
-"use client";
-
-import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { useCreateLeadMutation } from "@/redux/features/lead/leadApi";
 import { TLead } from "@/types";
-import { DownloadCloud, CheckCircle, AlertCircle } from "lucide-react";
+import { AlertCircle, CheckCircle, DownloadCloud } from "lucide-react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 
+// Lead Form Component
 interface LeadFormProps {
   ebookId: string;
   downloadUrl?: string;
 }
+
 
 const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
   const [lead, setLead] = useState<TLead>({
@@ -58,13 +58,13 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
 
   return (
     <div>
-      <h3 className="text-xl font-semibold text-slate-800 mb-6">
+      <h3 className="text-xl font-semibold text-slate-800 mb-6 w-full">
         Fill out the form to download
       </h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Full Name
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Full Name *
           </label>
           <input
             name="name"
@@ -76,8 +76,8 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Mobile Number
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Mobile Number *
           </label>
           <input
             name="mobile"
@@ -89,7 +89,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="block text-sm font-medium text-slate-700 mb-2">
             Address (Optional)
           </label>
           <textarea
@@ -104,7 +104,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
         <motion.button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 shadow-md"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -119,8 +119,8 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           animate={{ opacity: 1, y: 0 }}
           className={`mt-4 p-4 rounded-lg flex items-start gap-3 ${
             message.type === "success"
-              ? "bg-green-50 text-green-800"
-              : "bg-red-50 text-red-800"
+              ? "bg-green-50 text-green-800 border border-green-200"
+              : "bg-red-50 text-red-800 border border-red-200"
           }`}
         >
           {message.type === "success" ? (
@@ -128,11 +128,12 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           ) : (
             <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
           )}
-          <p>{message.text}</p>
+          <p className="text-sm">{message.text}</p>
         </motion.div>
       )}
     </div>
   );
 };
+
 
 export default LeadForm;
