@@ -24,7 +24,7 @@ const EBooksPage: React.FC = () => {
   const { data: rawFile, isLoading, isError } = useGetSingleFileQuery(id ?? "");
   const file: TEBook | null = rawFile?.data ?? null;
   const [imageLoaded, setImageLoaded] = useState(false);
-
+  console.log(imageLoaded)
   useEffect(() => {
     if (file?.coverImage) {
       const img = new Image();
@@ -63,7 +63,7 @@ const EBooksPage: React.FC = () => {
                 animate={{ rotate: -3 }}
               />
               <motion.img
-                src={"/placeholder-ebook.png"}
+                src={  file.imgUrl || "/placeholder-ebook.png"} // use uploaded img first, then coverImage, then fallback
                 alt={file.title}
                 className="relative rounded-2xl shadow-2xl w-full h-auto object-cover"
                 initial={{ opacity: 0, scale: 0.9 }}

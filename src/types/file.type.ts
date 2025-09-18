@@ -5,6 +5,7 @@ export interface TEBook {
   url: string;
   coverImage: string;
   reviews: TReview[];
+  imgUrl?: string;
 }
 
 export interface TReview {
