@@ -53,6 +53,9 @@ importers:
       react-dom:
         specifier: 19.1.0
         version: 19.1.0(react@19.1.0)
+      react-flip-numbers:
+        specifier: ^3.0.9
+        version: 3.0.9(react-dom@19.1.0(react@19.1.0))(react-simple-animate@3.5.3(react-dom@19.1.0(react@19.1.0)))(react@19.1.0)
       react-hook-form:
         specifier: ^7.62.0
         version: 7.62.0(react@19.1.0)
@@ -2720,6 +2723,13 @@ packages:
     peerDependencies:
       react: ^19.1.0
 
+  react-flip-numbers@3.0.9:
+    resolution: {integrity: sha512-ZFpFIz5wxT00rPuMfmCfPOsnC09u9oxYV3zPlfG1X79N58a5bwFvZcfl6BIosowa2tI9t9KyJIYcJICFyr5Y5g==}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+      react-dom: ^16.8.0 || ^17 || ^18 || ^19
+      react-simple-animate: ^3.0.1
+
   react-hook-form@7.62.0:
     resolution: {integrity: sha512-7KWFejc98xqG/F4bAxpL41NB3o1nnvQO1RWZT3TqRZYL8RryQETGfEdVnJN2fy1crCiBLLjkRBVK05j24FxJGA==}
     engines: {node: '>=18.0.0'}
@@ -2740,6 +2750,11 @@ packages:
         optional: true
       redux:
         optional: true
+
+  react-simple-animate@3.5.3:
+    resolution: {integrity: sha512-Ob+SmB5J1tXDEZyOe2Hf950K4M8VaWBBmQ3cS2BUnTORqHjhK0iKG8fB+bo47ZL15t8d3g/Y0roiqH05UBjG7A==}
+    peerDependencies:
+      react-dom: ^16.8.0 || ^17 || ^18 || ^19
 
   react@19.1.0:
     resolution: {integrity: sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==}
@@ -5993,6 +6008,12 @@ snapshots:
       react: 19.1.0
       scheduler: 0.26.0
 
+  react-flip-numbers@3.0.9(react-dom@19.1.0(react@19.1.0))(react-simple-animate@3.5.3(react-dom@19.1.0(react@19.1.0)))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+      react-simple-animate: 3.5.3(react-dom@19.1.0(react@19.1.0))
+
   react-hook-form@7.62.0(react@19.1.0):
     dependencies:
       react: 19.1.0
@@ -6007,6 +6028,10 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.1.13
       redux: 5.0.1
+
+  react-simple-animate@3.5.3(react-dom@19.1.0(react@19.1.0)):
+    dependencies:
+      react-dom: 19.1.0(react@19.1.0)
 
   react@19.1.0: {}
 
