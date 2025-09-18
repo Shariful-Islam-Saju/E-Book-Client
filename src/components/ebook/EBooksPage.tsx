@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { motion, Variants, easeOut } from "framer-motion";
 import { useGetSingleFileQuery } from "@/redux/features/file/fileApi";
@@ -11,9 +11,27 @@ import LeadForm from "../LeadForm";
 import EbookPageSkeleton from "./EbookPageSkeleton";
 import NoEbookFound from "./NoEbookFound";
 import DownloadCounter from "./DownloadCounter";
+import { yo } from "zod/v4/locales";
 
 const EBooksPage: React.FC = () => {
   const params = useParams();
+  const [yOffset, setYOffset] = useState(100);
+
+  useEffect(() => {
+    const updateYOffset = () => {
+      const width = window.innerWidth;
+      if (width <= 1024) {
+        setYOffset(0); // md screens
+      } else if (width >= 1024) {
+        setYOffset(90); // lg and above
+      }
+    };
+
+    updateYOffset();
+    window.addEventListener("resize", updateYOffset);
+    return () => window.removeEventListener("resize", updateYOffset);
+  }, [yOffset, setYOffset]);
+
   let id = params?.id;
   if (Array.isArray(id)) id = id[0];
 
@@ -40,15 +58,17 @@ const EBooksPage: React.FC = () => {
     },
   };
 
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       {/* Hero Section */}
-      <section className="relative mb-14 isolate bg-[#2f3237]">
-        <div className="mx-auto max-w-6xl py-16 lg:py-24">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <section className="relative md:lg:mb-24 pb-5 isolate bg-[#2f3237]">
+        <div className="mx-auto max-w-6xl pt-16 lg:pt-24">
+          <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-2 lg:gap-16">
             {/* Image first for mobile */}
             <motion.div
-              className="order-1 lg:order-1"
+              className="order-1 lg:order-1 my-6 md:my-0"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
@@ -56,15 +76,14 @@ const EBooksPage: React.FC = () => {
             >
               <div className="relative mx-auto w-[70%] max-w-md">
                 <motion.img
-                  src={"/placeholder-ebook.png"}
+                  src={file?.imgUrl || "/placeholder-ebook.png"}
                   alt={file.title}
-                  className="relative z-10 w-full h-auto object-cover "
-                  style={{boxShadow:"6px 6px 12px rgba(0,0,0 )"}}
-                  loading="eager"
+                  className="relative z-10 w-full object-cover"
+                  style={{ boxShadow: "4px 4px 12px rgba(0,0,0,0.6)" }}
                   decoding="async"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
+                  loading="eager"
+                  initial={{ opacity: 0, scale: 0.9, y: yOffset }}
+                  animate={{ opacity: 1, scale: 1, y: yOffset }}
                   transition={{ duration: 0.8, ease: easeOut }}
                 />
               </div>
