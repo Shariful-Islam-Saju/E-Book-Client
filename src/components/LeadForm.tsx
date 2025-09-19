@@ -11,6 +11,12 @@ import { toast } from "sonner";
 import { LeadFormSchema } from "@/schemas/LeadFormSchema";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Hind_Siliguri } from "next/font/google";
+
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["latin", "bengali"],
+  weight: ["400", "500", "700"],
+});
 
 type LeadFormInputs = z.infer<typeof LeadFormSchema>;
 
@@ -70,7 +76,9 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
     try {
       await createLead({ ...data, ebookId }).unwrap();
 
-      toast.success("Success! Your download will start shortly.");
+      toast.success(
+        "সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে। ডাউনলোড শুরু হবে অল্পক্ষণে।"
+      );
 
       if (downloadUrl) {
         const link = document.createElement("a");
@@ -81,10 +89,10 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
         link.click();
         document.body.removeChild(link);
       } else {
-        toast.error("Download URL not available.");
+        toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
       }
     } catch (err: any) {
-      toast.error(err?.data?.message || err?.message || "Something went wrong");
+      toast.error(err?.data?.message || err?.message || "কিছু ভুল হয়েছে");
       console.error(err);
     }
   };
@@ -100,9 +108,9 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
   };
 
   return (
-    <div className="z-50 relative">
+    <div className={`${hindSiliguri.className} z-50 relative`}>
       <h3 className="text-xl font-semibold text-slate-800 mb-6 w-full">
-        Fill out the form to download
+        ইবুক ডাউনলোড করতে নিচের ফর্মটি পূরণ করুন
       </h3>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 z-50">
         {/* Full Name */}
@@ -113,11 +121,11 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           variants={inputVariants}
         >
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            Full Name
+            পূর্ণ নাম
           </label>
           <Input
             type="text"
-            placeholder="Enter your full name"
+            placeholder="আপনার নাম লিখুন"
             {...register("name")}
           />
           {errors.name && (
@@ -133,13 +141,13 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           variants={inputVariants}
         >
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            Mobile Number *
+            মোবাইল নাম্বার *
           </label>
           <Input
             type="tel"
             inputMode="numeric"
             pattern="[0-9]*"
-            placeholder="Enter your mobile number"
+            placeholder="আপনার মোবাইল নাম্বার লিখুন"
             {...register("mobile")}
           />
           {errors.mobile && (
@@ -155,10 +163,10 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           variants={inputVariants}
         >
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            Address (Optional)
+            ঠিকানা (ঐচ্ছিক)
           </label>
           <Textarea
-            placeholder="Enter your address"
+            placeholder="আপনার ঠিকানা লিখুন"
             rows={3}
             {...register("address")}
           />
@@ -179,7 +187,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           }}
         >
           <DownloadCloud size={20} />
-          {isLoading ? "Processing..." : "Download Now"}
+          {isLoading ? "প্রসেসিং হচ্ছে..." : "ডাউনলোড করুন"}
         </motion.button>
       </form>
     </div>

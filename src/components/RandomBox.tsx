@@ -36,7 +36,7 @@ const RandomBox = () => {
         return (
           <motion.div
             key={i}
-            className="absolute opacity-20"
+            className="absolute opacity-10" // 🔹 made more transparent
             style={{
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,

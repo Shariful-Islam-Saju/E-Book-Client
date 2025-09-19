@@ -1,82 +1,104 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import FlipNumbers from "react-flip-numbers";
-import { Download, TrendingUp } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { TrendingUp } from "lucide-react";
+import { Hind_Siliguri } from "next/font/google";
+import DigitColumn from "../DigitColumn";
+import DIGITS_BN from "@/constants/DigitBN";
+
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["bengali"],
+  weight: ["400", "500", "700"],
+});
 
 const LOCAL_STORAGE_KEY = "download_counter";
 
+
+
 const DownloadCounter: React.FC = () => {
+  // শুরু মান (localStorage বা র‍্যান্ডম রেঞ্জ)
   const getInitialValue = () => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (stored) return parseInt(stored, 10);
     }
-    return Math.floor(Math.random() * (150000 - 10000 + 1)) + 10000;
+    return Math.floor(Math.random() * (20000 - 5000 + 1)) + 5000; // ৫০০০-২০০০০
   };
 
-  const [count, setCount] = useState(getInitialValue);
+  const [count, setCount] = useState<number>(() => getInitialValue());
+  const [lastIncrement, setLastIncrement] = useState<number>(0);
 
-  // Save to localStorage
+  // localStorage এ সেভ
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(LOCAL_STORAGE_KEY, count.toString());
+      localStorage.setItem(LOCAL_STORAGE_KEY, String(count));
     }
   }, [count]);
 
-  // Auto increment every 5s
+  // প্রতি ৫ সেকেন্ডে ইনক্রিমেন্ট
   useEffect(() => {
-    const interval = setInterval(() => {
-      const increment = Math.floor(Math.random() * (5 - 2 + 1)) + 2;
-      setCount((prev) => prev + increment);
+    const id = setInterval(() => {
+      const inc = Math.floor(Math.random() * 4) + 2; // ২–৫
+      setCount((s) => s + inc);
+      setLastIncrement(inc);
     }, 5000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(id);
   }, []);
 
+  // সংখ্যাকে ডিজিট অ্যারে (left padded না করা) — পরে আমরা left-align না করেই দেখাবো
+  const toDigitArray = (n: number) =>
+    n
+      .toString()
+      .split("")
+      .map((ch) => parseInt(ch, 10));
+
+  const digits = toDigitArray(count);
+
+  // বাংলা সংখ্যায় কনভার্টার (বাজ / সাবটেক্সটে ব্যবহার)
+  const toBangla = (num: number) =>
+    num.toString().replace(/[0-9]/g, (d) => DIGITS_BN[parseInt(d, 10)]);
+
+  // ডিজিট তুলনা/রেন্ডার হাইট
+  const DIGIT_HEIGHT = 36; // px - দরকারমত বাড়াও/নামাও
+
   return (
-    <div className="flex flex-col bg-white rounded-2xl shadow-xl p-6 max-w-md mx-auto border border-gray-100 hover:shadow-2xl transition-all duration-500">
-      {/* Header */}
+    <div
+      className={`${hindSiliguri.className} flex flex-col bg-white rounded-2xl shadow-xl p-6 max-w-md mx-auto border border-gray-100 hover:shadow-2xl transition-all duration-500`}
+    >
+      {/* হেডার */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-800">Total Downloads</h2>
+        <h2 className="text-xl font-bold text-gray-800">মোট ডাউনলোড</h2>
         <div className="flex items-center text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-full">
           <TrendingUp size={14} className="mr-1" />
-          <span>Live</span>
+          <span>লাইভ</span>
         </div>
       </div>
 
-      {/* Main Counter */}
-      <div className="flex items-end justify-between">
-        <div className="flex items-center">
-          {/* Icon */}
-          <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-md mr-5">
-            <Download className="w-7 h-7 text-white" />
-          </div>
-
-          {/* Counter */}
-          <div>
-
-            <div className="flex items-center justify-between gap-4 font-extrabold tracking-tight text-gray-900 text-[25px]">
-              <FlipNumbers
-                height={20} // size of the digits
-                width={20} // width of each digit
-                color="#111827" // dark color
-                background="transparent"
-                play
-                perspective={1200} // smooth 3D effect
-                numbers={count.toString()}
-                duration={5} // very slow
-                delay={0.1} // smooth flip
-              />
-              <div className="flex items-center text-sm font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700 shadow-md animate-pulse">
-                <TrendingUp size={14} className="mr-1" />+
-                {Math.floor(Math.random() * 4) + 2}
-              </div>
+      {/* কাউন্টার: প্রতিটি ডিজিট আলাদা কলামে */}
+      <div
+        className="flex items-center justify-between  font-extrabold text-gray-900  py-3"
+        style={{ fontSize: 28, height: DIGIT_HEIGHT }}
+        aria-live="polite"
+        aria-label={`মোট ডাউনলোড ${toBangla(count)}`}
+      >
+        {/* ডিজিটগুলোর flex container */}
+        <div className="flex items-center gap-1 h-full">
+          {digits.map((d, idx) => (
+            <div
+              key={idx}
+              className="flex items-center justify-center"
+              style={{ width: 20, height: DIGIT_HEIGHT }}
+            >
+              <DigitColumn digit={d} height={DIGIT_HEIGHT} duration={2} />
             </div>
-          </div>
+          ))}
         </div>
 
-        {/* Change indicator */}
+        {/* ইনক্রিমেন্ট ব্যাজ */}
+        <div className="text-sm font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700 shadow-md">
+          +{toBangla(lastIncrement)}
+        </div>
       </div>
     </div>
   );

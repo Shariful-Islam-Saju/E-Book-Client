@@ -27,9 +27,9 @@ const EBooksPage: React.FC = () => {
     const updateYOffset = () => {
       const width = window.innerWidth;
       if (width <= 1024) {
-        setYOffset(0); // md screens
+        setYOffset(0);
       } else if (width >= 1024) {
-        setYOffset(90); // lg and above
+        setYOffset(90);
       }
     };
 
@@ -46,14 +46,15 @@ const EBooksPage: React.FC = () => {
 
   if (!id)
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        No file ID provided.
+      <div
+        className={`${hindSiliguri.className} min-h-screen flex items-center justify-center`}
+      >
+        কোনো ফাইল আইডি দেওয়া হয়নি।
       </div>
     );
   if (isLoading) return <EbookPageSkeleton />;
   if (isError || !file) return <NoEbookFound />;
 
-  // Scroll-from-bottom animation variant
   const fadeUpVariant: Variants = {
     hidden: { opacity: 0, y: 60, scale: 0.95 },
     visible: {
@@ -65,13 +66,15 @@ const EBooksPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative bg-gradient-to-b from-slate-50 to-slate-100">
+    <div
+      className={`${hindSiliguri.className} min-h-screen relative bg-gradient-to-b from-slate-50 to-slate-100`}
+    >
       <RandomBox />
-      {/* Hero Section */}
+      {/* হিরো সেকশন */}
       <section className=" z-50 md:lg:mb-24 pb-5 isolate bg-[rgb(58,126,173)]">
         <div className="mx-auto max-w-6xl pt-8">
           <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-2 lg:gap-16">
-            {/* Image first for mobile */}
+            {/* ইমেজ */}
             <motion.div
               className="order-1 lg:order-1 my-6 md:my-0"
               initial="hidden"
@@ -101,19 +104,16 @@ const EBooksPage: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.05 }}
               variants={fadeUpVariant}
             >
-              <h1
-                className={`${hindSiliguri.className} font-bold text-4xl/[1.15] px-5 md:px-0 sm:text-5xl/[1.1] text-gray-100 tracking-tight mb-5`}
-              >
+              <h1 className="font-bold text-4xl/[1.15] px-5 md:px-0 sm:text-5xl/[1.1] text-gray-100 tracking-tight mb-5">
                 {file.title}
               </h1>
               <p className="mb-8 text-base sm:text-lg px-5 md:px-0 text-justify text-gray-300 leading-relaxed">
-                <span className={`${hindSiliguri.className} ring-emerald-400/25  py-0.5`}>
+                <span className=" ring-emerald-400/25  py-0.5">
                   {file.description}
-                </span>{" "}
-              </p>{" "}
-              {/* Redesigned button without input */}{" "}
+                </span>
+              </p>
+              {/* বাটন */}
               <div className="flex justify-center lg:justify-start">
-                {" "}
                 <button
                   onClick={() => {
                     const el = document.querySelector("#lead-form");
@@ -126,16 +126,16 @@ const EBooksPage: React.FC = () => {
                   className="relative inline-flex items-center justify-center overflow-hidden rounded-md px-4 py-2 bg-[rgb(37,177,112)] text-white transition-all"
                 >
                   <span className="relative flex items-center gap-2 font-bold text-lg">
-                    Download <ArrowRight className="h-4 w-4" />
+                    ডাউনলোড করুন <ArrowRight className="h-4 w-4" />
                   </span>
-                </button>{" "}
-              </div>{" "}
+                </button>
+              </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Lead Form + Download Counter */}
+      {/* ফর্ম + ডাউনলোড কাউন্টার */}
       <motion.section
         className="mb-16 max-w-6xl mx-auto  z-50"
         initial="hidden"
@@ -156,19 +156,20 @@ const EBooksPage: React.FC = () => {
         </div>
       </motion.section>
 
-      {/* Reviews */}
+      {/* রিভিউ */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
         variants={fadeUpVariant}
+        className="z-30 relative "
       >
-        <h2 className="text-3xl font-bold text-center text-slate-800 mb-4">
-          What Readers Are Saying
+        <h2 className="text-3xl  font-bold text-center px-5 text-slate-800 mb-4">
+          পাঠকদের অভিমত
         </h2>
-        <p className="text-center text-slate-600 mb-12 max-w-2xl mx-auto">
-          Discover why thousands of readers have made this ebook their go-to
-          resource.
+        <p className="text-center text-slate-600 mb-12 px-5 max-w-2xl mx-auto">
+          জেনে নিন কেন হাজারো পাঠক এই ইবুককে তাদের প্রিয় রিসোর্স হিসেবে বেছে
+          নিয়েছে।
         </p>
         <Reviews reviews={file.reviews ?? []} />
       </motion.section>
