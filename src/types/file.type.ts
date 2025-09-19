@@ -1,5 +1,6 @@
 export interface TEBook {
   id: string;
+  fileName: string;
   title: string;
   description: string;
   url: string;

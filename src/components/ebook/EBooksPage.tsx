@@ -11,8 +11,13 @@ import LeadForm from "../LeadForm";
 import EbookPageSkeleton from "./EbookPageSkeleton";
 import NoEbookFound from "./NoEbookFound";
 import DownloadCounter from "./DownloadCounter";
-import { yo } from "zod/v4/locales";
 import RandomBox from "../RandomBox";
+import { Hind_Siliguri } from "next/font/google";
+
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["latin", "bengali"],
+  weight: ["400", "500", "700"],
+});
 
 const EBooksPage: React.FC = () => {
   const params = useParams();
@@ -63,7 +68,7 @@ const EBooksPage: React.FC = () => {
     <div className="min-h-screen relative bg-gradient-to-b from-slate-50 to-slate-100">
       <RandomBox />
       {/* Hero Section */}
-      <section className=" z-50 md:lg:mb-24 pb-5 isolate bg-[#2f3237]">
+      <section className=" z-50 md:lg:mb-24 pb-5 isolate bg-[rgb(58,126,173)]">
         <div className="mx-auto max-w-6xl pt-8">
           <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-2 lg:gap-16">
             {/* Image first for mobile */}
@@ -78,7 +83,7 @@ const EBooksPage: React.FC = () => {
                 <motion.img
                   src={file?.imgUrl || "/placeholder-ebook.png"}
                   alt={file.title}
-                  className="relative z-10 w-full object-cover"
+                  className="relative z-10 w-full rounded-lg "
                   style={{ boxShadow: "12px 8px 8px rgba(0,0,0,0.6)" }}
                   decoding="async"
                   loading="eager"
@@ -96,11 +101,13 @@ const EBooksPage: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.05 }}
               variants={fadeUpVariant}
             >
-              <h1 className="text-4xl/[1.15] px-5 md:px-0 sm:text-5xl/[1.1] font-extrabold text-gray-100 tracking-tight mb-5">
+              <h1
+                className={`${hindSiliguri.className} font-bold text-4xl/[1.15] px-5 md:px-0 sm:text-5xl/[1.1] text-gray-100 tracking-tight mb-5`}
+              >
                 {file.title}
-              </h1>{" "}
+              </h1>
               <p className="mb-8 text-base sm:text-lg px-5 md:px-0 text-justify text-gray-300 leading-relaxed">
-                <span className=" ring-emerald-400/25  py-0.5">
+                <span className={`${hindSiliguri.className} ring-emerald-400/25  py-0.5`}>
                   {file.description}
                 </span>{" "}
               </p>{" "}

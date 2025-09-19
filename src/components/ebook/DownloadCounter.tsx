@@ -55,9 +55,6 @@ const DownloadCounter: React.FC = () => {
 
           {/* Counter */}
           <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
-              Downloads
-            </p>
 
             <div className="flex items-center justify-between gap-4 font-extrabold tracking-tight text-gray-900 text-[25px]">
               <FlipNumbers

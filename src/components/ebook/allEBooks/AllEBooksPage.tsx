@@ -77,7 +77,7 @@ const EBooksPage = () => {
           >
             <BookText size={48} className="text-white" />
           </motion.div>
-          <h1 className="text-4xl md:text-5xl font-bold  mb-8 z-20 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold  my-4 py-2 z-20 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             Digital Seba Library
           </h1>
           <p className="text-gray-700 max-w-2xl mx-auto text-lg">
