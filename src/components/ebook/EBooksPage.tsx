@@ -83,8 +83,8 @@ const EBooksPage: React.FC = () => {
                 <motion.img
                   src={file?.imgUrl || "/placeholder-ebook.png"}
                   alt={file.title}
-                  className="relative z-10 w-full rounded-lg "
-                  style={{ boxShadow: "12px 8px 8px rgba(0,0,0,0.6)" }}
+                  className="relative z-10 w-full rounded-md "
+                  style={{ boxShadow: "10px 8px 4px rgba(0,0,0,0.5)" }}
                   decoding="async"
                   loading="eager"
                   initial={{ opacity: 0, scale: 0.9, y: yOffset }}
@@ -158,7 +158,6 @@ const EBooksPage: React.FC = () => {
 
       {/* Reviews */}
       <motion.section
-        className="mb-16"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}

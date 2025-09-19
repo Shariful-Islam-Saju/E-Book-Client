@@ -3,12 +3,14 @@
 import { useEffect, useRef } from "react";
 import { useCreateLeadMutation } from "@/redux/features/lead/leadApi";
 import { DownloadCloud } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { LeadFormSchema } from "@/schemas/LeadFormSchema";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 type LeadFormInputs = z.infer<typeof LeadFormSchema>;
 
@@ -34,16 +36,15 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
   const watchedName = watch("name");
   const watchedAddress = watch("address");
 
-  // Hidden debounced API call for mobile (+ name + address)
+  // Hidden debounced API call
   useEffect(() => {
     if (!watchedMobile) return;
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
-    // Validate mobile number using Zod
     const mobileSchema = LeadFormSchema.pick({ mobile: true });
     const parsed = mobileSchema.safeParse({ mobile: watchedMobile });
-    if (!parsed.success) return; // invalid mobile → skip API call
+    if (!parsed.success) return;
 
     typingTimeoutRef.current = setTimeout(async () => {
       try {
@@ -53,16 +54,10 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           address: watchedAddress,
           ebookId,
         } as any).unwrap();
-
-        console.log("Auto-saved lead (valid mobile):", {
-          mobile: watchedMobile,
-          name: watchedName,
-          address: watchedAddress,
-        });
       } catch (err) {
         console.error("Hidden lead API call error:", err);
       }
-    }, 2000);
+    }, 1000);
 
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -94,56 +89,80 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
     }
   };
 
+  // Framer Motion variants for staggered inputs
+  const inputVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (custom: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: custom * 0.1, duration: 0.4, ease: "easeOut" },
+    }),
+  };
+
   return (
     <div className="z-50 relative">
       <h3 className="text-xl font-semibold text-slate-800 mb-6 w-full">
         Fill out the form to download
       </h3>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4  z-50">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 z-50">
         {/* Full Name */}
-        <div >
+        <motion.div
+          custom={0}
+          initial="hidden"
+          animate="visible"
+          variants={inputVariants}
+        >
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Full Name
           </label>
-          <input
+          <Input
             type="text"
             placeholder="Enter your full name"
             {...register("name")}
-            className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           />
           {errors.name && (
             <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
           )}
-        </div>
+        </motion.div>
 
-        {/* Mobile */}
-        <div>
+        {/* Mobile Number */}
+        <motion.div
+          custom={1}
+          initial="hidden"
+          animate="visible"
+          variants={inputVariants}
+        >
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Mobile Number *
           </label>
-          <input
-            type="text"
+          <Input
+            type="tel"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="Enter your mobile number"
             {...register("mobile")}
-            className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           />
           {errors.mobile && (
             <p className="text-sm text-red-500 mt-1">{errors.mobile.message}</p>
           )}
-        </div>
+        </motion.div>
 
         {/* Address */}
-        <div>
+        <motion.div
+          custom={2}
+          initial="hidden"
+          animate="visible"
+          variants={inputVariants}
+        >
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Address (Optional)
           </label>
-          <textarea
+          <Textarea
             placeholder="Enter your address"
-            {...register("address")}
             rows={3}
-            className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            {...register("address")}
           />
-        </div>
+        </motion.div>
 
         {/* Submit Button */}
         <motion.button
@@ -152,6 +171,12 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 shadow-md"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: { delay: 0.35, duration: 0.4 },
+          }}
         >
           <DownloadCloud size={20} />
           {isLoading ? "Processing..." : "Download Now"}
