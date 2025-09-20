@@ -1,6 +1,6 @@
-import React from 'react'
-import { motion, } from "framer-motion";
-import DIGITS_BN from '@/constants/DigitBN';
+import React from "react";
+import { motion } from "framer-motion";
+import { DIGITS_EN } from "@/constants/Digit";
 
 const DigitColumn: React.FC<{
   digit: number;
@@ -8,8 +8,6 @@ const DigitColumn: React.FC<{
   duration?: number;
 }> = ({ digit, height, duration = 10 }) => {
   const y = -digit * height;
-
-
 
   return (
     <div
@@ -29,7 +27,7 @@ const DigitColumn: React.FC<{
         transition={{ duration, ease: "easeInOut" }}
         style={{ display: "block" }}
       >
-        {DIGITS_BN.map((d, i) => (
+        {DIGITS_EN.map((d, i) => (
           <div
             key={i}
             style={{
@@ -47,5 +45,4 @@ const DigitColumn: React.FC<{
   );
 };
 
-
-export default DigitColumn
+export default DigitColumn;

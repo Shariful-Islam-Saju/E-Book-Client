@@ -119,6 +119,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           initial="hidden"
           animate="visible"
           variants={inputVariants}
+          id="lead-form"
         >
           <label className="block text-sm font-medium text-slate-700 mb-2">
             পূর্ণ নাম
