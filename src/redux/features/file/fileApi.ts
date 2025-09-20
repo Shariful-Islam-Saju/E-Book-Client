@@ -11,7 +11,7 @@ export const fileApi = baseApi.injectEndpoints({
       }),
     }),
     getAllFiles: builder.query<TRes<TEBook[]>, string>({
-      query: (id: string) => ({
+      query: () => ({
         url: `/file`,
         method: "GET",
       }),

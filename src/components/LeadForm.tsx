@@ -43,6 +43,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
   const watchedAddress = watch("address");
 
   // Hidden debounced API call
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!watchedMobile) return;
 
@@ -59,7 +60,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           name: watchedName,
           address: watchedAddress,
           ebookId,
-        } as any).unwrap();
+        }).unwrap();
       } catch (err) {
         console.error("Hidden lead API call error:", err);
       }
@@ -68,42 +69,42 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
-  }, [watchedMobile,   ebookId, createLead]);
+  }, [watchedMobile, ebookId, createLead]);
 
-const onSubmit = async (data: LeadFormInputs) => {
-  if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+  const onSubmit = async (data: LeadFormInputs) => {
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
-  try {
-    await createLead({ ...data, ebookId }).unwrap();
+    try {
+      await createLead({ ...data, ebookId }).unwrap();
 
-    toast.success(
-      "সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে। ডাউনলোড শুরু হবে অল্পক্ষণে।"
-    );
+      toast.success(
+        "সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে। ডাউনলোড শুরু হবে অল্পক্ষণে।"
+      );
 
-    if (downloadUrl) {
-      try {
-        // ✅ Fetch file as blob and trigger download
-        const response = await fetch(downloadUrl);
-        if (!response.ok) throw new Error("Failed to fetch file");
+      if (downloadUrl) {
+        try {
+          // ✅ Fetch file as blob and trigger download
+          const response = await fetch(downloadUrl);
+          if (!response.ok) throw new Error("Failed to fetch file");
 
-        const blob = await response.blob();
-        const fileName = downloadUrl.split("/").pop() || "file.pdf";
-        const blobUrl = window.URL.createObjectURL(blob);
+          const blob = await response.blob();
+          const fileName = downloadUrl.split("/").pop() || "file.pdf";
+          const blobUrl = window.URL.createObjectURL(blob);
 
-        const anchor = document.createElement("a");
-        anchor.href = blobUrl;
-        anchor.download = fileName;
-        document.body.appendChild(anchor);
-        anchor.click();
-        document.body.removeChild(anchor);
+          const anchor = document.createElement("a");
+          anchor.href = blobUrl;
+          anchor.download = fileName;
+          document.body.appendChild(anchor);
+          anchor.click();
+          document.body.removeChild(anchor);
 
-        window.URL.revokeObjectURL(blobUrl);
-      } catch (downloadErr) {
-        toast.error("ডাউনলোড করতে সমস্যা হয়েছে।");
-        console.error(downloadErr);
-      }
+          window.URL.revokeObjectURL(blobUrl);
+        } catch (downloadErr) {
+          toast.error("ডাউনলোড করতে সমস্যা হয়েছে।");
+          console.error(downloadErr);
+        }
 
-      /*
+        /*
       // Previous approach (commented out):
       const fileName = downloadUrl.split("/").pop() || "file.pdf";
       const anchor = document.createElement("a");
@@ -114,15 +115,14 @@ const onSubmit = async (data: LeadFormInputs) => {
       anchor.click();
       document.body.removeChild(anchor);
       */
-    } else {
-      toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
+      } else {
+        toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
+      }
+    } catch (err: any) {
+      toast.error(err?.data?.message || err?.message || "কিছু ভুল হয়েছে");
+      console.error(err);
     }
-  } catch (err: any) {
-    toast.error(err?.data?.message || err?.message || "কিছু ভুল হয়েছে");
-    console.error(err);
-  }
-};
-
+  };
 
   // Framer Motion variants for staggered inputs
   const inputVariants: Variants = {

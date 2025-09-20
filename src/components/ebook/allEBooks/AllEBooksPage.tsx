@@ -5,15 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  BookOpen,
   Search,
   BookX,
-  Star,
-  Calendar,
-  User,
+
   ArrowRight,
-  Download,
-  Eye,
+ 
   BookText,
 } from "lucide-react";
 import Link from "next/link";

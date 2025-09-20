@@ -6,7 +6,6 @@ import {
   Wrench,
   Clock,
   Hammer,
-  Mail,
   Sparkles,
   Construction,
 } from "lucide-react";
@@ -110,7 +109,7 @@ export default function UnderConstruction() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          We're working hard to bring you something amazing!
+          We&lsquo;re working hard to bring you something amazing!
         </motion.p>
 
         {/* Status Section */}

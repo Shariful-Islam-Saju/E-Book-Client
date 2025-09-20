@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect,  useState } from "react";
 import { Hind_Siliguri } from "next/font/google";
 import DigitColumn from "../../utils/DigitColumn";
 import { DIGITS_EN } from "@/constants/Digit";
 import { LOCAL_STORAGE_KEY } from "@/constants/LocalStoreKey";
-import { getRandomNumber } from "@/utils/getRandomNumber";
+import { getInitialValue } from "@/utils/getRandomNumber";
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ["bengali"],
@@ -15,16 +15,7 @@ const hindSiliguri = Hind_Siliguri({
 
 const DownloadCounter: React.FC = () => {
   // শুরু মান (localStorage বা র‍্যান্ডম রেঞ্জ)
-  const getInitialValue = () => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (stored) return parseInt(stored, 10);
-    }
-    return getRandomNumber(15000, 20000); // ৫০০০-২০০০০
-  };
-
   const [count, setCount] = useState<number>(() => getInitialValue());
-  const [lastIncrement, setLastIncrement] = useState<number>(0);
 
   // localStorage এ সেভ
   useEffect(() => {
@@ -38,7 +29,6 @@ const DownloadCounter: React.FC = () => {
     const id = setInterval(() => {
       const inc = Math.floor(Math.random() * 4) + 2; // ২–৫
       setCount((s) => s + inc);
-      setLastIncrement(inc);
     }, 5000);
 
     return () => clearInterval(id);
