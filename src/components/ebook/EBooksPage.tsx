@@ -84,7 +84,7 @@ const EBooksPage: React.FC = () => {
     >
       <RandomBox />
       {/* Hero Section */}
-      <section className=" z-50 md:lg:mb-24 pb-5 isolate h-[100vh] bg-[rgb(58,126,173)]">
+      <section className=" z-50 md:lg:mb-24 pb-5 isolate  bg-[rgb(58,126,173)]">
         <div className="mx-auto max-w-6xl pt-8">
           <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-2 lg:gap-16">
             {/* Image */}

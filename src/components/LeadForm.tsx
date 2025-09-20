@@ -68,34 +68,61 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
-  }, [watchedMobile, watchedName, watchedAddress, ebookId, createLead]);
+  }, [watchedMobile,   ebookId, createLead]);
 
-  const onSubmit = async (data: LeadFormInputs) => {
-    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+const onSubmit = async (data: LeadFormInputs) => {
+  if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
-    try {
-      await createLead({ ...data, ebookId }).unwrap();
+  try {
+    await createLead({ ...data, ebookId }).unwrap();
 
-      toast.success(
-        "সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে। ডাউনলোড শুরু হবে অল্পক্ষণে।"
-      );
+    toast.success(
+      "সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে। ডাউনলোড শুরু হবে অল্পক্ষণে।"
+    );
 
-      if (downloadUrl) {
-        const link = document.createElement("a");
-        link.href = downloadUrl;
-        link.download = downloadUrl.split("/").pop() || "file.pdf";
-        link.target = "_blank";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
+    if (downloadUrl) {
+      try {
+        // ✅ Fetch file as blob and trigger download
+        const response = await fetch(downloadUrl);
+        if (!response.ok) throw new Error("Failed to fetch file");
+
+        const blob = await response.blob();
+        const fileName = downloadUrl.split("/").pop() || "file.pdf";
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        const anchor = document.createElement("a");
+        anchor.href = blobUrl;
+        anchor.download = fileName;
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (downloadErr) {
+        toast.error("ডাউনলোড করতে সমস্যা হয়েছে।");
+        console.error(downloadErr);
       }
-    } catch (err: any) {
-      toast.error(err?.data?.message || err?.message || "কিছু ভুল হয়েছে");
-      console.error(err);
+
+      /*
+      // Previous approach (commented out):
+      const fileName = downloadUrl.split("/").pop() || "file.pdf";
+      const anchor = document.createElement("a");
+      anchor.href = downloadUrl;
+      anchor.download = fileName;
+      anchor.style.display = "none";
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      */
+    } else {
+      toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
     }
-  };
+  } catch (err: any) {
+    toast.error(err?.data?.message || err?.message || "কিছু ভুল হয়েছে");
+    console.error(err);
+  }
+};
+
 
   // Framer Motion variants for staggered inputs
   const inputVariants: Variants = {
