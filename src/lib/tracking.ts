@@ -75,14 +75,8 @@ class TrackingManager {
       script.async = true;
       script.defer = true;
       script.crossOrigin = "anonymous";
-      script.onload = () => {
-        console.log(`Script loaded: ${id}`);
-        resolve();
-      };
-      script.onerror = () => {
-        console.error(`Failed to load script: ${src}`);
-        reject(new Error(`Failed to load script: ${src}`));
-      };
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
 
       document.head.appendChild(script);
     });
@@ -109,17 +103,14 @@ class TrackingManager {
           "meta-pixel-script"
         );
 
-        // Initialize Meta Pixel with proper parameters
-        window.fbq("init", this.metaPixelId, {
-          em: "hashed_email", // Optional: for better tracking
-        });
+        // Wait a bit for script to fully load
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
-        // Track PageView with proper parameters
-        window.fbq("track", "PageView", {
-          content_name: "Page View",
-        });
+        // Initialize Meta Pixel
+        window.fbq("init", this.metaPixelId);
 
-        console.log("Meta Pixel initialized with ID:", this.metaPixelId);
+        // Track PageView
+        window.fbq("track", "PageView");
       }
 
       // Initialize TikTok Pixel
@@ -137,13 +128,12 @@ class TrackingManager {
           "tiktok-pixel-script"
         );
 
+        // Wait a bit for script to fully load
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
         // Initialize TikTok Pixel
         window.ttq("init", this.tiktokPixelId);
-        window.ttq("track", "ViewContent", {
-          content_name: "Page View",
-        });
-
-        console.log("TikTok Pixel initialized with ID:", this.tiktokPixelId);
+        window.ttq("track", "ViewContent");
       }
 
       this.isInitialized = true;
@@ -154,7 +144,6 @@ class TrackingManager {
 
   trackMetaPixel(event: MetaPixelEvent): void {
     if (!this.isInitialized || !window.fbq || !this.metaPixelId) {
-      console.warn("Meta Pixel not initialized or not available");
       return;
     }
 
@@ -167,7 +156,6 @@ class TrackingManager {
 
   trackTikTok(event: TikTokEvent): void {
     if (!this.isInitialized || !window.ttq || !this.tiktokPixelId) {
-      console.warn("TikTok Pixel not initialized or not available");
       return;
     }
 
