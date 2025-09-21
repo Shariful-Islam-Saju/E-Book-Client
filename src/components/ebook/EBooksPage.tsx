@@ -13,6 +13,7 @@ import NoEbookFound from "./NoEbookFound";
 import DownloadCounter from "./DownloadCounter";
 import RandomBox from "../RandomBox";
 import { Hind_Siliguri } from "next/font/google";
+import { useTracking } from "@/components/TrackingProvider";
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ["latin", "bengali"],
@@ -23,6 +24,7 @@ const EBooksPage: React.FC = () => {
   const params = useParams();
   const [yOffset, setYOffset] = useState(100);
   const [showForm, setShowForm] = useState(false);
+  const { trackEbookView } = useTracking();
 
   useEffect(() => {
     const updateYOffset = () => {
@@ -56,6 +58,13 @@ const EBooksPage: React.FC = () => {
 
   const { data: rawFile, isLoading, isError } = useGetSingleFileQuery(id ?? "");
   const file: TEBook | null = rawFile?.data ?? null;
+
+  // Track ebook view when file data is loaded
+  useEffect(() => {
+    if (file && file.id && file.title) {
+      trackEbookView(file.title, file.id);
+    }
+  }, [file, trackEbookView]);
 
   if (!id)
     return (
@@ -152,11 +161,13 @@ const EBooksPage: React.FC = () => {
         viewport={{ once: true, amount: 0.3 }}
         variants={fadeUpVariant}
       >
-        <div
-          className="bg-gradient-to-r z-50 from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden flex flex-col lg:flex-row"
-        >
+        <div className="bg-gradient-to-r z-50 from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden flex flex-col lg:flex-row">
           <div className="lg:w-2/3 bg-white p-8">
-            <LeadForm ebookId={file.id} downloadUrl={file.url} />
+            <LeadForm
+              ebookId={file.id}
+              downloadUrl={file.url}
+              ebookTitle={file.title}
+            />
           </div>
           <div className="lg:w-1/3 bg-white p-8">
             <DownloadCounter />

@@ -1,13 +1,16 @@
-import React from "react";
-import EBooksPage from "@/components/ebook/EBooksPage";
+"use client";
 
-// Static metadata
-export const metadata = {
-  title: "EBook",
-  description: "Browse and read your favorite e-books online",
-};
+import React, { useEffect } from "react";
+import EBooksPage from "@/components/ebook/EBooksPage";
+import { useTracking } from "@/components/TrackingProvider";
 
 const Page = () => {
+  const { trackPageView } = useTracking();
+
+  useEffect(() => {
+    trackPageView("Individual EBook Page");
+  }, [trackPageView]);
+
   return <EBooksPage />;
 };
 

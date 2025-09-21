@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
 import AllProviders from "@/redux/AllProviders";
+import { TrackingProvider } from "@/components/TrackingProvider";
 import { Toaster } from "sonner";
 
 // English font: Roboto
@@ -31,23 +32,24 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-
 }>) {
   return (
     <html lang="en">
       <body
         className={`${roboto.variable} ${hindSiliguri.variable} antialiased`}
       >
-        <AllProviders>
-          {children}
-          <Toaster
-            position="bottom-right"
-            richColors
-            toastOptions={{
-              duration: 4000,
-            }}
-          />
-        </AllProviders>
+        <TrackingProvider>
+          <AllProviders>
+            {children}
+            <Toaster
+              position="bottom-right"
+              richColors
+              toastOptions={{
+                duration: 4000,
+              }}
+            />
+          </AllProviders>
+        </TrackingProvider>
       </body>
     </html>
   );

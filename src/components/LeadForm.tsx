@@ -12,6 +12,7 @@ import { LeadFormSchema } from "@/schemas/LeadFormSchema";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Hind_Siliguri } from "next/font/google";
+import { useTracking } from "@/components/TrackingProvider";
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ["latin", "bengali"],
@@ -23,11 +24,17 @@ type LeadFormInputs = z.infer<typeof LeadFormSchema>;
 interface LeadFormProps {
   ebookId: string;
   downloadUrl?: string;
+  ebookTitle?: string;
 }
 
-const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
+const LeadForm: React.FC<LeadFormProps> = ({
+  ebookId,
+  downloadUrl,
+  ebookTitle,
+}) => {
   const [createLead, { isLoading }] = useCreateLeadMutation();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { trackLead, trackEbookDownload } = useTracking();
 
   const {
     register,
@@ -77,6 +84,9 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
     try {
       await createLead({ ...data, ebookId }).unwrap();
 
+      // Track lead generation
+      trackLead(ebookTitle || "Ebook Download Form");
+
       toast.success(
         "সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে। ডাউনলোড শুরু হবে অল্পক্ষণে।"
       );
@@ -99,6 +109,9 @@ const LeadForm: React.FC<LeadFormProps> = ({ ebookId, downloadUrl }) => {
           document.body.removeChild(anchor);
 
           window.URL.revokeObjectURL(blobUrl);
+
+          // Track successful download
+          trackEbookDownload(ebookTitle || "Ebook", ebookId, 0);
         } catch (downloadErr) {
           toast.error("ডাউনলোড করতে সমস্যা হয়েছে।");
           console.error(downloadErr);

@@ -1,11 +1,16 @@
-import AllEbooksPage from "@/components/ebook/allEBooks/AllEBooksPage";
-import React from "react";
+"use client";
 
-export const metadata = {
-  title: "EBooks",
-  description: "Browse and read your favorite e-books online",
-};
+import AllEbooksPage from "@/components/ebook/allEBooks/AllEBooksPage";
+import React, { useEffect } from "react";
+import { useTracking } from "@/components/TrackingProvider";
+
 const page = () => {
+  const { trackPageView } = useTracking();
+
+  useEffect(() => {
+    trackPageView("EBooks List Page");
+  }, [trackPageView]);
+
   return <AllEbooksPage />;
 };
 
