@@ -77,7 +77,7 @@ const Reviews: React.FC<ReviewsProps> = ({ reviews }) => {
   if (!reviews || reviews.length === 0) {
     return (
       <div
-        className={`${hindSiliguri.className} text-center py-12 bg-slate-50 rounded-2xl border border-slate-200`}
+        className={`${hindSiliguri.className} text-center py-12 rounded-2xl border border-slate-200`}
       >
         <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-slate-100">
           <Star className="w-8 h-8 text-slate-400" />

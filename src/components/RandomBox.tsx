@@ -13,7 +13,7 @@ const randomPath = (steps: number, maxOffset: number) =>
 const RandomBox = () => {
   return (
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-      {[...Array(50)].map((_, i) => {
+      {[...Array(45)].map((_, i) => {
         const size = Math.random() * 100 + 50; // 50px - 150px
         const duration = Math.random() * 10 + 20; // 10s - 20s
 

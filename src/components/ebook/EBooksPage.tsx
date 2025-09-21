@@ -14,6 +14,7 @@ import DownloadCounter from "./DownloadCounter";
 import RandomBox from "../RandomBox";
 import { Hind_Siliguri } from "next/font/google";
 import { useTracking } from "@/components/TrackingProvider";
+import Image from "next/image";
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ["latin", "bengali"],
@@ -21,11 +22,11 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 const EBooksPage: React.FC = () => {
+  const MotionImage = motion.create(Image);
   const params = useParams();
   const [yOffset, setYOffset] = useState(100);
   const [showForm, setShowForm] = useState(false);
   const { trackEbookView } = useTracking();
-
   useEffect(() => {
     const updateYOffset = () => {
       const width = window.innerWidth;
@@ -105,13 +106,16 @@ const EBooksPage: React.FC = () => {
               variants={fadeUpVariant}
             >
               <div className="relative mx-auto w-[70%] max-w-md">
-                <motion.img
+                <MotionImage
                   src={file?.imgUrl || "/placeholder-ebook.png"}
-                  alt={file.title}
-                  className="relative z-10 w-full rounded-md "
+                  alt={file?.title || "Ebook Image"}
+                  width={400} // ✅ required for next/image
+                  height={600} // ✅ required for next/image
+                  className="relative z-10 w-full rounded-md"
                   style={{ boxShadow: "10px 8px 4px rgba(0,0,0,0.5)" }}
                   decoding="async"
                   loading="eager"
+                  priority
                   initial={{ opacity: 0, scale: 0.9, y: yOffset }}
                   animate={{ opacity: 1, scale: 1, y: yOffset }}
                   transition={{ duration: 0.8, ease: easeOut }}

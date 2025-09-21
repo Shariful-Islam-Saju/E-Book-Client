@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Hind_Siliguri } from "next/font/google";
 import { useTracking } from "@/components/TrackingProvider";
+import { useRouter } from "next/navigation";
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ["latin", "bengali"],
@@ -45,6 +46,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
   const [createLead, { isLoading }] = useCreateLeadMutation();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { trackLead, trackEbookDownload } = useTracking();
+  const router = useRouter()
 
   const {
     register,
@@ -123,6 +125,8 @@ const LeadForm: React.FC<LeadFormProps> = ({
 
               // Track successful download
               trackEbookDownload(ebookTitle || "Ebook", ebookId, 0);
+
+              router.push("/thank-you");
             } else {
               toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
             }
