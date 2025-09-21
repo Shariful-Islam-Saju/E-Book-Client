@@ -99,42 +99,45 @@ const LeadForm: React.FC<LeadFormProps> = ({
     };
 
     try {
-      await createLead({ ...normalizedData, ebookId }).unwrap();
+      const res = createLead({ ...normalizedData, ebookId }).unwrap();
 
-      // Track lead generation
-      trackLead(ebookTitle || "Ebook Download Form");
+      toast.promise(res, {
+        loading: "Downloading......",
+        success: async (res) => {
+          trackLead(ebookTitle || "Ebook Download Form");
+          if (res?.data?.id) {
+            if (downloadUrl) {
+              const response = await fetch(downloadUrl);
+              if (!response.ok) throw new Error("Failed to fetch file");
 
-      toast.success(
-        "সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে। ডাউনলোড শুরু হবে অল্পক্ষণে।"
-      );
+              const blob = await response.blob();
+              const fileName = downloadUrl.split("/").pop() || "file.pdf";
+              const blobUrl = window.URL.createObjectURL(blob);
 
-      if (downloadUrl) {
-        try {
-          const response = await fetch(downloadUrl);
-          if (!response.ok) throw new Error("Failed to fetch file");
+              const anchor = document.createElement("a");
+              anchor.href = blobUrl;
+              anchor.download = fileName;
+              document.body.appendChild(anchor);
+              anchor.click();
+              document.body.removeChild(anchor);
 
-          const blob = await response.blob();
-          const fileName = downloadUrl.split("/").pop() || "file.pdf";
-          const blobUrl = window.URL.createObjectURL(blob);
+              window.URL.revokeObjectURL(blobUrl);
 
-          const anchor = document.createElement("a");
-          anchor.href = blobUrl;
-          anchor.download = fileName;
-          document.body.appendChild(anchor);
-          anchor.click();
-          document.body.removeChild(anchor);
-
-          window.URL.revokeObjectURL(blobUrl);
-
-          // Track successful download
-          trackEbookDownload(ebookTitle || "Ebook", ebookId, 0);
-        } catch (downloadErr) {
-          toast.error("ডাউনলোড করতে সমস্যা হয়েছে।");
-          console.error(downloadErr);
-        }
-      } else {
-        toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
-      }
+              // Track successful download
+              trackEbookDownload(ebookTitle || "Ebook", ebookId, 0);
+            } else {
+              toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
+            }
+            return "Downloading Completed Successfully";
+          } else {
+            return res?.message;
+          }
+        },
+        error: (error) => {
+          console.log(error.message);
+          return error?.message || "Something went wrong";
+        },
+      });
     } catch (err: any) {
       toast.error(err?.data?.message || err?.message || "কিছু ভুল হয়েছে");
       console.error(err);
