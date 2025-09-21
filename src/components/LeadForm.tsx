@@ -56,8 +56,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
   });
 
   const watchedMobile = watch("mobile");
-  const watchedName = watch("name");
-  const watchedAddress = watch("address");
+
 
   // Hidden debounced API call
   useEffect(() => {
@@ -75,8 +74,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
       try {
         await createLead({
           mobile: normalizedMobile,
-          name: watchedName,
-          address: watchedAddress,
+
           ebookId,
         }).unwrap();
       } catch (err) {
@@ -87,7 +85,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
-  }, [watchedMobile, ebookId, createLead, watchedAddress, watchedName]);
+  }, [watchedMobile, ebookId, createLead]);
 
   const onSubmit = async (data: LeadFormInputs) => {
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -102,7 +100,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
       const res = createLead({ ...normalizedData, ebookId }).unwrap();
 
       toast.promise(res, {
-        loading: "Downloading......",
+        loading: "ডাউনলোড হচ্ছে......",
         success: async (res) => {
           trackLead(ebookTitle || "Ebook Download Form");
           if (res?.data?.id) {
@@ -128,7 +126,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
             } else {
               toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
             }
-            return "Downloading Completed Successfully";
+            return "ডাউনলোড সফলভাবে সম্পন্ন হয়েছে";
           } else {
             return res?.message;
           }
