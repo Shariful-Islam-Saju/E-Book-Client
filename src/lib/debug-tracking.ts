@@ -15,10 +15,6 @@ export const debugTracking = {
     // Check if script is loaded
     const script = document.getElementById("meta-pixel-script");
     console.log("Script element exists:", !!script);
-    if (script) {
-      console.log("Script src:", script.getAttribute("src"));
-      console.log("Script loaded:", script.readyState || "unknown");
-    }
   },
 
   // Check if TikTok Pixel is loaded and working
@@ -36,10 +32,6 @@ export const debugTracking = {
     // Check if script is loaded
     const script = document.getElementById("tiktok-pixel-script");
     console.log("Script element exists:", !!script);
-    if (script) {
-      console.log("Script src:", script.getAttribute("src"));
-      console.log("Script loaded:", script.readyState || "unknown");
-    }
   },
 
   // Test Meta Pixel with a simple event
@@ -71,12 +63,7 @@ export const debugTracking = {
   },
 
   // Run all debug checks
-  runAllChecks: () => {
-    console.log("🔍 RUNNING TRACKING DEBUG CHECKS...");
-    this.checkMetaPixel();
-    this.checkTikTokPixel();
-    console.log("✅ Debug checks complete");
-  },
+  runAllChecks: () => {},
 };
 
 // Make it available globally for easy debugging
