@@ -87,7 +87,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
-  }, [watchedMobile, ebookId, createLead, watchedName, watchedAddress]);
+  }, [watchedMobile, ebookId, createLead, watchedAddress, watchedName]);
 
   const onSubmit = async (data: LeadFormInputs) => {
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
