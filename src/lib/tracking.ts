@@ -73,8 +73,16 @@ class TrackingManager {
       script.id = id;
       script.src = src;
       script.async = true;
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+      script.defer = true;
+      script.crossOrigin = "anonymous";
+      script.onload = () => {
+        console.log(`Script loaded: ${id}`);
+        resolve();
+      };
+      script.onerror = () => {
+        console.error(`Failed to load script: ${src}`);
+        reject(new Error(`Failed to load script: ${src}`));
+      };
 
       document.head.appendChild(script);
     });
@@ -88,36 +96,54 @@ class TrackingManager {
     try {
       // Initialize Meta Pixel
       if (this.metaPixelId) {
-        await this.loadScript(
-          `https://connect.facebook.net/en_US/fbevents.js`,
-          "meta-pixel-script"
-        );
-
-        // Initialize Meta Pixel
+        // Set up fbq function before loading script
         window.fbq =
           window.fbq ||
           function (...args: any[]) {
             (window.fbq.q = window.fbq.q || []).push(args);
           };
-        window.fbq("init", this.metaPixelId);
-        window.fbq("track", "PageView");
+
+        // Load the script
+        await this.loadScript(
+          `https://connect.facebook.net/en_US/fbevents.js`,
+          "meta-pixel-script"
+        );
+
+        // Initialize Meta Pixel with proper parameters
+        window.fbq("init", this.metaPixelId, {
+          em: "hashed_email", // Optional: for better tracking
+        });
+
+        // Track PageView with proper parameters
+        window.fbq("track", "PageView", {
+          content_name: "Page View",
+        });
+
+        console.log("Meta Pixel initialized with ID:", this.metaPixelId);
       }
 
       // Initialize TikTok Pixel
       if (this.tiktokPixelId) {
+        // Set up ttq function before loading script
+        window.ttq =
+          window.ttq ||
+          function (...args: any[]) {
+            (window.ttq.q = window.ttq.q || []).push(args);
+          };
+
+        // Load the script
         await this.loadScript(
           `https://analytics.tiktok.com/i18n/pixel/events.js`,
           "tiktok-pixel-script"
         );
 
         // Initialize TikTok Pixel
-        window.ttq =
-          window.ttq ||
-          function (...args: any[]) {
-            (window.ttq.q = window.ttq.q || []).push(args);
-          };
         window.ttq("init", this.tiktokPixelId);
-        window.ttq("track", "ViewContent");
+        window.ttq("track", "ViewContent", {
+          content_name: "Page View",
+        });
+
+        console.log("TikTok Pixel initialized with ID:", this.tiktokPixelId);
       }
 
       this.isInitialized = true;

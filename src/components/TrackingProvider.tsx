@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, ReactNode } from "react";
 import { trackingManager } from "@/lib/tracking";
+import "@/lib/debug-tracking"; // Import debug utility
 
 interface TrackingContextType {
   trackPageView: (pageName?: string) => void;
