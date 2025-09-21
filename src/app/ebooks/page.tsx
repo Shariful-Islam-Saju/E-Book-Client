@@ -4,7 +4,7 @@ import AllEbooksPage from "@/components/ebook/allEBooks/AllEBooksPage";
 import React, { useEffect } from "react";
 import { useTracking } from "@/components/TrackingProvider";
 
-const page = () => {
+const Page = () => {
   const { trackPageView } = useTracking();
 
   useEffect(() => {
@@ -14,4 +14,4 @@ const page = () => {
   return <AllEbooksPage />;
 };
 
-export default page;
+export default Page;

@@ -27,6 +27,16 @@ interface LeadFormProps {
   ebookTitle?: string;
 }
 
+// ✅ Convert Bangla digits to English digits
+const normalizeNumber = (input: string) => {
+  const banglaDigits = "০১২৩৪৫৬৭৮৯";
+  const englishDigits = "0123456789";
+  return input.replace(
+    /[০-৯]/g,
+    (d) => englishDigits[banglaDigits.indexOf(d)] || d
+  );
+};
+
 const LeadForm: React.FC<LeadFormProps> = ({
   ebookId,
   downloadUrl,
@@ -50,20 +60,21 @@ const LeadForm: React.FC<LeadFormProps> = ({
   const watchedAddress = watch("address");
 
   // Hidden debounced API call
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!watchedMobile) return;
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
+    const normalizedMobile = normalizeNumber(watchedMobile); // ✅ normalize
+
     const mobileSchema = LeadFormSchema.pick({ mobile: true });
-    const parsed = mobileSchema.safeParse({ mobile: watchedMobile });
+    const parsed = mobileSchema.safeParse({ mobile: normalizedMobile });
     if (!parsed.success) return;
 
     typingTimeoutRef.current = setTimeout(async () => {
       try {
         await createLead({
-          mobile: watchedMobile,
+          mobile: normalizedMobile,
           name: watchedName,
           address: watchedAddress,
           ebookId,
@@ -76,13 +87,19 @@ const LeadForm: React.FC<LeadFormProps> = ({
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
-  }, [watchedMobile, ebookId, createLead]);
+  }, [watchedMobile, ebookId, createLead, watchedName, watchedAddress]);
 
   const onSubmit = async (data: LeadFormInputs) => {
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
+    // ✅ Ensure number is English before sending
+    const normalizedData = {
+      ...data,
+      mobile: normalizeNumber(data.mobile),
+    };
+
     try {
-      await createLead({ ...data, ebookId }).unwrap();
+      await createLead({ ...normalizedData, ebookId }).unwrap();
 
       // Track lead generation
       trackLead(ebookTitle || "Ebook Download Form");
@@ -93,7 +110,6 @@ const LeadForm: React.FC<LeadFormProps> = ({
 
       if (downloadUrl) {
         try {
-          // ✅ Fetch file as blob and trigger download
           const response = await fetch(downloadUrl);
           if (!response.ok) throw new Error("Failed to fetch file");
 
@@ -116,18 +132,6 @@ const LeadForm: React.FC<LeadFormProps> = ({
           toast.error("ডাউনলোড করতে সমস্যা হয়েছে।");
           console.error(downloadErr);
         }
-
-        /*
-      // Previous approach (commented out):
-      const fileName = downloadUrl.split("/").pop() || "file.pdf";
-      const anchor = document.createElement("a");
-      anchor.href = downloadUrl;
-      anchor.download = fileName;
-      anchor.style.display = "none";
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-      */
       } else {
         toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
       }
@@ -137,7 +141,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
     }
   };
 
-  // Framer Motion variants for staggered inputs
+  // Framer Motion variants
   const inputVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: (custom: number) => ({
@@ -187,10 +191,10 @@ const LeadForm: React.FC<LeadFormProps> = ({
           <Input
             type="tel"
             inputMode="numeric"
-            pattern="[0-9]*"
             placeholder="আপনার মোবাইল নাম্বার লিখুন"
             {...register("mobile")}
           />
+
           {errors.mobile && (
             <p className="text-sm text-red-500 mt-1">{errors.mobile.message}</p>
           )}
