@@ -47,7 +47,7 @@ const DownloadCounter: React.FC = () => {
     num.toString().replace(/[0-9]/g, (d) => DIGITS_EN[parseInt(d, 10)]);
 
   // ডিজিট তুলনা/রেন্ডার হাইট
-  const DIGIT_HEIGHT = 36; // px - দরকারমত বাড়াও/নামাও
+  const DIGIT_HEIGHT = 45; // px - দরকারমত বাড়াও/নামাও
 
   return (
     <div
@@ -67,18 +67,18 @@ const DownloadCounter: React.FC = () => {
 
       {/* কাউন্টার: প্রতিটি ডিজিট আলাদা কলামে */}
       <div
-        className="flex flex-col items-center justify-between font-extrabold text-gray-900 py-3"
-        style={{ fontSize: 28, height: DIGIT_HEIGHT }}
+        className="flex flex-col w-full mx-3 items-center font-extrabold text-gray-900 py-3"
+        style={{ fontSize: 50, height: DIGIT_HEIGHT }}
         aria-live="polite"
         aria-label={`মোট ডাউনলোড ${toBangla(count)}`}
       >
         {/* ডিজিটগুলোর flex container */}
-        <div className="flex items-center gap-1 h-full mb-2">
+        <div className="flex items-center w-full justify-around gap-1 h-full mb-2">
           {digits.map((d, idx) => (
             <div
               key={idx}
               className="flex items-center justify-center"
-              style={{ width: 20, height: DIGIT_HEIGHT }}
+              style={{ width: 30, height: DIGIT_HEIGHT }}
             >
               <DigitColumn digit={d} height={DIGIT_HEIGHT} duration={2} />
             </div>

@@ -88,6 +88,24 @@ const EBooksPage: React.FC = () => {
     },
   };
 
+  // Replace your button onClick handlers with this
+  const handleDownloadClick = () => {
+    if (!showForm) {
+      setShowForm(true);
+      setTimeout(() => {
+        const el = document.querySelector("#lead-form");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 100); // wait for DOM update
+    } else {
+      const el = document.querySelector("#lead-form");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  };
+
   return (
     <div
       className={`${hindSiliguri.className} min-h-screen relative bg-gradient-to-b from-slate-50 to-slate-100`}
@@ -142,8 +160,8 @@ const EBooksPage: React.FC = () => {
               {/* Button */}
               <div className="flex justify-center lg:justify-start">
                 <button
-                  onClick={() => setShowForm(true)}
-                  className="relative inline-flex items-center justify-center overflow-hidden rounded-md px-4 py-2 bg-[rgb(37,177,112)] text-white transition-all"
+                  onClick={handleDownloadClick}
+                  className="relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-md px-4 py-2 bg-[rgb(37,177,112)] text-white transition-all"
                 >
                   <span className="relative flex items-center gap-2 font-bold text-lg">
                     ডাউনলোড করুন <ArrowRight className="h-4 w-4" />
@@ -195,6 +213,24 @@ const EBooksPage: React.FC = () => {
           নিয়েছে।
         </p>
         <Reviews reviews={file.reviews ?? []} />
+        <div className="flex justify-center ">
+          <button
+            onClick={handleDownloadClick}
+            className="relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-md px-4 py-2 bg-[rgb(37,177,112)] text-white transition-all"
+          >
+            <span className="relative flex items-center gap-2 font-bold text-lg">
+              ডাউনলোড করুন <ArrowRight className="h-4 w-4" />
+            </span>
+          </button>
+        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          className="mt-12 text-center text-gray-600"
+        >
+          <p>© {new Date().getFullYear()} Digital Seba. All rights reserved.</p>
+        </motion.div>
       </motion.section>
     </div>
   );

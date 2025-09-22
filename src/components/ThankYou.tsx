@@ -3,20 +3,19 @@
 import React from "react";
 import { motion } from "framer-motion";
 import RandomBox from "./RandomBox";
+import { Hind_Siliguri } from "next/font/google";
+import Link from "next/link";
+
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
 const ThankYou = () => {
-  // Handle phone call function
-  const handleCall = () => {
-    window.location.href = "tel:+88019611900247";
-  };
-
-  // Handle Facebook link
-  const handleFacebook = () => {
-    window.open("https://www.facebook.com/share/16ycS2sZNv/", "_blank");
-  };
-
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+    <div
+      className={`${hindSiliguri.className} relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4`}
+    >
       {/* Background elements */}
       <RandomBox />
 
@@ -142,9 +141,9 @@ const ThankYou = () => {
             className="flex flex-col sm:flex-row gap-4 justify-center mb-8"
           >
             {/* Phone call button */}
-            <button
-              onClick={handleCall}
-              className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-green-500/30 flex items-center justify-center"
+            <Link
+              href="tel:+88019611900247"
+              className="px-6 py-3  bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-green-500/30 flex items-center justify-center"
             >
               <svg
                 className="w-5 h-5 mr-2"
@@ -161,12 +160,13 @@ const ThankYou = () => {
                 />
               </svg>
               ফোন করুন
-            </button>
+            </Link>
 
             {/* Facebook button */}
-            <button
-              onClick={handleFacebook}
-              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-blue-500/30 flex items-center justify-center"
+            <Link
+              href="https://www.facebook.com/share/16ycS2sZNv/"
+              target="_blank"
+              className="px-6 cursor-pointer py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-blue-500/30 flex items-center justify-center"
             >
               <svg
                 className="w-5 h-5 mr-2"
@@ -177,34 +177,21 @@ const ThankYou = () => {
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
               ফেসবুক পেজ
-            </button>
+            </Link>
           </motion.div>
-
-          {/* Additional info */}
-          {/* <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9, duration: 0.5 }}
-            className="mt-6 pt-6 border-t border-green-200"
-          >
-            <p className="text-sm text-gray-600 mb-2">
-              বইটি পড়তে কোনো সমস্যা হলে বা আরও তথ্যের প্রয়োজন হলে সরাসরি ফোন
-              করুন
-            </p>
-            <p className="text-sm text-gray-600">
-              ইমেইল:{" "}
-              <span className="font-semibold text-green-700">
-                support@prokritihealth.com
-              </span>
-            </p>
-          </motion.div> */}
         </div>
       </motion.div>
 
       {/* Footer */}
       <div className="absolute bottom-4 left-0 w-full text-center text-sm text-green-700/70 z-10">
-        প্রাকৃতিক স্বাস্থ্য কেয়ার - প্রকৃতির মতো সহজ স্বাস্থ্য উপায়
-      </div>
+ <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          className="mt-12 text-center text-gray-600"
+        >
+          <p>© {new Date().getFullYear()} Digital Seba. All rights reserved.</p>
+        </motion.div>      </div>
 
       {/* Add the floating animation style */}
       <style jsx>{`
