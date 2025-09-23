@@ -25,4 +25,8 @@ export const fileApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetSingleFileQuery, useGetFileByNameQuery, useGetAllFilesQuery } = fileApi;
+export const {
+  useGetSingleFileQuery,
+  useGetFileByNameQuery,
+  useGetAllFilesQuery,
+} = fileApi;

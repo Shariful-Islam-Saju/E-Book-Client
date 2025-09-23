@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { motion, Variants, easeOut } from "framer-motion";
 import { useGetSingleFileQuery } from "@/redux/features/file/fileApi";
 import { TEBook } from "@/types";
-import { ArrowRight } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import Reviews from "../Reviews";
 import LeadForm from "../LeadForm";
 import EbookPageSkeleton from "./EbookPageSkeleton";
@@ -41,7 +41,6 @@ const EBooksPage: React.FC = () => {
     window.addEventListener("resize", updateYOffset);
     return () => window.removeEventListener("resize", updateYOffset);
   }, [yOffset, setYOffset]);
-
   // ✅ Scroll into view after form becomes visible
   useEffect(() => {
     if (showForm) {
@@ -87,6 +86,7 @@ const EBooksPage: React.FC = () => {
       transition: { duration: 0.8, ease: easeOut },
     },
   };
+  console.log(file);
 
   // Replace your button onClick handlers with this
   const handleDownloadClick = () => {
@@ -127,8 +127,8 @@ const EBooksPage: React.FC = () => {
                 <MotionImage
                   src={file?.imgUrl || "/placeholder-ebook.png"}
                   alt={file?.title || "Ebook Image"}
-                  width={400} // ✅ required for next/image
-                  height={600} // ✅ required for next/image
+                  width={400}
+                  height={600}
                   className="relative z-10 w-full rounded-md"
                   style={{ boxShadow: "10px 8px 4px rgba(0,0,0,0.5)" }}
                   decoding="async"
@@ -149,14 +149,34 @@ const EBooksPage: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.05 }}
               variants={fadeUpVariant}
             >
-              <h1 className="font-bold text-4xl/[1.15] px-5 md:px-0 sm:text-5xl/[1.1] text-gray-100 tracking-tight mb-5">
+              <h1 className="font-bold text-4xl/[1.15] px-5 md:px-0 sm:text-5xl/[1.1] text-white tracking-tight mb-5">
                 {file.title}
               </h1>
-              <p className="mb-8  text-base text-end sm:text-lg px-5 md:px-0  text-gray-300 leading-relaxed">
-                <span className=" ring-emerald-400/25  py-0.5">
+
+              <p className="mb-6 text-base text-end sm:text-lg px-5 md:px-0 md:text-center text-gray-100 leading-relaxed">
+                <span className="ring-emerald-400/25 py-0.5">
                   {file.description}
                 </span>
               </p>
+
+              {/* Price Section */}
+              <div className="flex flex-col items-center lg:items-start mb-4">
+                <p className="text-gray-200 text-base font-medium mb-2">
+                  বিশেষ অফার মূল্য
+                </p>
+                <div className="flex flex-col sm:flex-row items-center gap-2">
+                  {/* Original Price */}
+                  <span className="text-gray-200 line-through text-lg">
+                    ৳{file.bookPrice}
+                  </span>
+                  {/* Discounted Price */}
+                  <span className="text-2xl font-extrabold text-emerald-400">
+                    ৳{file.bookPrice - file.discount} টাকা
+
+                  </span>
+                </div>
+              </div>
+
               {/* Button */}
               <div className="flex justify-center lg:justify-start">
                 <button
@@ -164,7 +184,7 @@ const EBooksPage: React.FC = () => {
                   className="relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-md px-4 py-2 bg-[rgb(37,177,112)] text-white transition-all"
                 >
                   <span className="relative flex items-center gap-2 font-bold text-lg">
-                    ডাউনলোড করুন <ArrowRight className="h-4 w-4" />
+                    ডাউনলোড করুন <ArrowDown className="h-4 w-4" />
                   </span>
                 </button>
               </div>
@@ -183,7 +203,7 @@ const EBooksPage: React.FC = () => {
         viewport={{ once: true, amount: 0.3 }}
         variants={fadeUpVariant}
       >
-        <div className="bg-gradient-to-r z-50 from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden flex flex-col lg:flex-row">
+        <div className="bg-gradient-to-r z-50 rounded-2xl shadow-xl overflow-hidden flex flex-col lg:flex-row">
           <div className="lg:w-2/3 bg-white p-8">
             <LeadForm
               ebookId={file.id}
@@ -194,6 +214,20 @@ const EBooksPage: React.FC = () => {
           <div className="lg:w-1/3 bg-white p-8">
             <DownloadCounter />
           </div>
+        </div>
+      </motion.section>
+
+      <motion.section
+        className={`mb-16 max-w-6xl mx-auto z-50 mt-20 lg:mt-32 ${
+          showForm ? "hidden" : "block"
+        }`}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={fadeUpVariant}
+      >
+        <div className="z-50  rounded-2xl  overflow-hidden flex justify-center">
+          <DownloadCounter />
         </div>
       </motion.section>
 
@@ -219,7 +253,7 @@ const EBooksPage: React.FC = () => {
             className="relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-md px-4 py-2 bg-[rgb(37,177,112)] text-white transition-all"
           >
             <span className="relative flex items-center gap-2 font-bold text-lg">
-              ডাউনলোড করুন <ArrowRight className="h-4 w-4" />
+              ডাউনলোড করুন <ArrowDown className="h-4 w-4" />
             </span>
           </button>
         </div>

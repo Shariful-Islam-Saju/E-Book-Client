@@ -7,6 +7,8 @@ export interface TEBook {
   url: string;
   reviews: TReview[];
   imgUrl?: string;
+  discount: number;
+  bookPrice: number
 }
 
 export interface TReview {

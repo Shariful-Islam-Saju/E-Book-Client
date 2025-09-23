@@ -127,7 +127,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
               trackEbookDownload(ebookTitle || "Ebook", ebookId, 0);
 
               router.push("/thank-you");
-              return res.message || "ডাউনলোড সফলভাবে সম্পন্ন হয়েছে";
+              return  "ডাউনলোড সফলভাবে সম্পন্ন হয়েছে";
             } else {
               toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
             }

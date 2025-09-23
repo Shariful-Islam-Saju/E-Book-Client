@@ -1,12 +1,7 @@
 import { normalizeNumber } from "@/constants/Digit";
 import { z } from "zod";
 
-// ✅ Normalize Bangla digits to English digits
-
-
-export const LeadFormSchema = z.object({
-  name: z.string().max(50, "Name is too long").optional(),
-
+export const loginSchema = z.object({
   mobile: z
     .string()
     .nonempty("Mobile number is required")
@@ -30,8 +25,7 @@ export const LeadFormSchema = z.object({
         local.test(cleaned)
       );
     }, "Invalid Bangladeshi mobile number"),
-
-  address: z.string().max(200, "Address is too long").optional(),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export type LeadFormInputs = z.infer<typeof LeadFormSchema>;
+export type LoginFormValues = z.infer<typeof loginSchema>;

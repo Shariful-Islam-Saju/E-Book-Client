@@ -4,6 +4,7 @@ import "./globals.css";
 import AllProviders from "@/redux/AllProviders";
 import { TrackingProvider } from "@/components/TrackingProvider";
 import { Toaster } from "sonner";
+import Image from "next/image";
 
 // English font: Roboto
 const roboto = Roboto({
@@ -56,7 +57,7 @@ export default function RootLayout({
               }}
             />
             <noscript>
-              <img
+              <Image
                 height="1"
                 width="1"
                 style={{ display: "none" }}
