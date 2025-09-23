@@ -46,7 +46,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
   const [createLead, { isLoading }] = useCreateLeadMutation();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { trackLead, trackEbookDownload } = useTracking();
-  const router = useRouter()
+  const router = useRouter();
 
   const {
     register,
@@ -58,7 +58,6 @@ const LeadForm: React.FC<LeadFormProps> = ({
   });
 
   const watchedMobile = watch("mobile");
-
 
   // Hidden debounced API call
   useEffect(() => {
@@ -107,30 +106,31 @@ const LeadForm: React.FC<LeadFormProps> = ({
           trackLead(ebookTitle || "Ebook Download Form");
           if (res?.data?.id) {
             if (downloadUrl) {
-              const response = await fetch(downloadUrl);
-              if (!response.ok) throw new Error("Failed to fetch file");
+              // const link = document.createElement("a");
+              // link.href = downloadUrl;
+              // link.target = "_blank";
+              // link.rel = "noopener noreferrer";
+              // link.download = ebookTitle || "ebook.pdf"; // optional filename
+              // document.body.appendChild(link);
+              // link.click();
+              // document.body.removeChild(link);
 
-              const blob = await response.blob();
-              const fileName = downloadUrl.split("/").pop() || "file.pdf";
-              const blobUrl = window.URL.createObjectURL(blob);
-
-              const anchor = document.createElement("a");
-              anchor.href = blobUrl;
-              anchor.download = fileName;
-              document.body.appendChild(anchor);
-              anchor.click();
-              document.body.removeChild(anchor);
-
-              window.URL.revokeObjectURL(blobUrl);
+              const link = document.createElement("a");
+              link.href = downloadUrl;
+              link.download = ebookTitle || "Health_book"; // Set the filename directly
+              link.rel = "noopener noreferrer"; // Security best practice
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
 
               // Track successful download
               trackEbookDownload(ebookTitle || "Ebook", ebookId, 0);
 
               router.push("/thank-you");
+              return res.message || "ডাউনলোড সফলভাবে সম্পন্ন হয়েছে";
             } else {
               toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
             }
-            return "ডাউনলোড সফলভাবে সম্পন্ন হয়েছে";
           } else {
             return res?.message;
           }

@@ -152,7 +152,7 @@ const EBooksPage: React.FC = () => {
               <h1 className="font-bold text-4xl/[1.15] px-5 md:px-0 sm:text-5xl/[1.1] text-gray-100 tracking-tight mb-5">
                 {file.title}
               </h1>
-              <p className="mb-8  text-base text-center lg:text-start sm:text-lg px-5 md:px-0  text-gray-300 leading-relaxed">
+              <p className="mb-8  text-base text-end sm:text-lg px-5 md:px-0  text-gray-300 leading-relaxed">
                 <span className=" ring-emerald-400/25  py-0.5">
                   {file.description}
                 </span>

@@ -9,7 +9,7 @@ import {
   BookX,
 
   ArrowRight,
- 
+
   BookText,
 } from "lucide-react";
 import Link from "next/link";
@@ -211,7 +211,7 @@ const EBooksPage = () => {
                   whileHover={{ y: -5 }}
                   className="flex"
                 >
-                  <Link href={`/ebooks/${ebook.id}`} className="flex-1">
+                  <Link href={`/ebooks/${ebook.slug}`} className="flex-1">
                     <Card className="h-full flex flex-col overflow-hidden border-0 bg-white/90 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer rounded-2xl group">
                       <div className="overflow-hidden relative">
                         <motion.img
