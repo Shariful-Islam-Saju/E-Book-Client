@@ -9,7 +9,13 @@ export const leadApi = baseApi.injectEndpoints({
         body: userInfo,
       }),
     }),
+    getAllLead: builder.query({
+      query: () => ({
+        url: "/lead/all-leads",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useCreateLeadMutation } = leadApi;
+export const { useCreateLeadMutation, useGetAllLeadQuery } = leadApi;
