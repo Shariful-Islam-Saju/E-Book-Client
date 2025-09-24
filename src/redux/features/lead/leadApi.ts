@@ -1,4 +1,5 @@
 import baseApi from "@/redux/api/baseApi";
+import { TLead, TRes } from "@/types";
 
 export const leadApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,7 +10,7 @@ export const leadApi = baseApi.injectEndpoints({
         body: userInfo,
       }),
     }),
-    getAllLead: builder.query({
+    getAllLead: builder.query<TRes<TLead[]>, undefined>({
       query: () => ({
         url: "/lead/all-leads",
         method: "GET",
