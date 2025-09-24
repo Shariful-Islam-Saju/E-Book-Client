@@ -20,7 +20,7 @@ export default function LoginLayout({
       setLoading(true);
     } else if (token) {
       // Already logged in -> redirect
-      router.push("/");
+      router.push("/dashboard/leads-management");
     } else {
       // No token -> allow login page
       setLoading(false);

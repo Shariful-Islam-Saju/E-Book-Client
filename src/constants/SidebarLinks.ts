@@ -3,12 +3,12 @@ import { FileText, Users } from "lucide-react";
 export const sidebarLinks = [
   {
     title: "Leads Management",
-    href: "/leads-management",
+    href: "/dashboard/leads-management",
     icon: Users, // Represents people/leads
   },
   {
     title: "EBook Library",
-    href: "/ebook-library",
+    href: "/dashboard/ebook-library",
     icon: FileText, // Represents PDF files
   },
 ];

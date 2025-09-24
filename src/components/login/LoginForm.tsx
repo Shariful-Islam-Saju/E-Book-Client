@@ -44,7 +44,7 @@ const LoginForm = () => {
       const response = await login(data).unwrap();
       const user = jwtDecode(response.data.accessToken);
       dispatch(setuser({ user, token: response.data.accessToken }));
-      router.push('/dashboard')
+      router.push("/dashboard/leads-management");
     } catch (err: any) {
       setError(() => err?.data?.message || err.message);
       // TODO: show toast or error
