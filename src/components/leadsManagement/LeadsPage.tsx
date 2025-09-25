@@ -13,14 +13,7 @@ import LeadTable from "./LeadTable";
 import LeadDownload from "./LeadDownload";
 
 import { TLead } from "@/types";
-import { MultiSelect } from "react-multi-select-component";
-
-const dummyEbooks = [
-  { label: "JavaScript Basics", value: "ebook1" },
-  { label: "React Advanced", value: "ebook2" },
-  { label: "Node.js Guide", value: "ebook3" },
-  { label: "DSA in JS", value: "ebook4" },
-];
+import AllEbookDropdown from "./AllEbookDropdown";
 
 const limitOptions = [10, 100, 200, 500];
 
@@ -38,6 +31,8 @@ const LeadsPage: React.FC = () => {
   const [toDate, setToDate] = useState(
     today.toISOString().split("T")[0] // today
   );
+
+
 
   // When sending to API
   const fromDateTime = new Date(fromDate); // start of yesterday
@@ -156,14 +151,7 @@ const LeadsPage: React.FC = () => {
               <label className="text-sm text-gray-600 mb-1">
                 Select Ebook(s)
               </label>
-              <MultiSelect
-                options={dummyEbooks}
-                value={selectedEbooks}
-                onChange={setSelectedEbooks}
-                labelledBy="Select Ebook"
-                overrideStrings={{ selectSomeItems: "Select Ebook" }}
-                className="w-full"
-              />
+              <AllEbookDropdown selectedEbooks={selectedEbooks} setSelectedEbooks={setSelectedEbooks} />
             </div>
 
             {/* Download Button */}
