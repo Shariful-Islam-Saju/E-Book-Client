@@ -15,11 +15,11 @@ import LeadDownload from "./LeadDownload";
 import { TLead } from "@/types";
 import AllEbookDropdown from "./AllEbookDropdown";
 
-const limitOptions = [2, 100, 200, 500];
+const limitOptions = [50, 100, 200, 500];
 
 const LeadsPage: React.FC = () => {
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(2);
+  const [limit, setLimit] = useState(50);
 
   const today = new Date();
   const yesterday = new Date();

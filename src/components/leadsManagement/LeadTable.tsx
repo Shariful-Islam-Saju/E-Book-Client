@@ -12,7 +12,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import {  Trash2 } from "lucide-react";
 import { TLead } from "@/types";
 import { motion } from "framer-motion";
 import ConfirmationModal from "../ConfirmationModal";

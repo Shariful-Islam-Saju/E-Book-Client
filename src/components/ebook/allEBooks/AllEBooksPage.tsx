@@ -19,7 +19,7 @@ import NoEBooks from "./NoEBooks";
 import RandomBox from "@/components/RandomBox";
 
 const EBooksPage = () => {
-  const { data, error, isLoading, isSuccess } = useGetAllFilesQuery("");
+  const { data, error, isLoading, isSuccess } = useGetAllFilesQuery();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredEBooks, setFilteredEBooks] = useState<TEBook[]>([]);
 

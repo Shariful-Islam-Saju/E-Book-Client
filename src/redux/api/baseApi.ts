@@ -45,6 +45,7 @@ const baseQueryWithRefreshToken = async (
         api.dispatch(logout());
       }
     } catch (error) {
+      console.log(error)
       api.dispatch(logout());
     }
   }
