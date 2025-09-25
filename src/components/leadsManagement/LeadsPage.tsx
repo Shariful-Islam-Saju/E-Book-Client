@@ -15,29 +15,26 @@ import LeadDownload from "./LeadDownload";
 import { TLead } from "@/types";
 import AllEbookDropdown from "./AllEbookDropdown";
 
-const limitOptions = [10, 100, 200, 500];
+const limitOptions = [2, 100, 200, 500];
 
 const LeadsPage: React.FC = () => {
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(100);
+  const [limit, setLimit] = useState(2);
+
   const today = new Date();
   const yesterday = new Date();
   yesterday.setDate(today.getDate() - 1);
 
   // Inputs for UI
   const [fromDate, setFromDate] = useState(
-    yesterday.toISOString().split("T")[0] // yesterday
+    yesterday.toISOString().split("T")[0]
   );
-  const [toDate, setToDate] = useState(
-    today.toISOString().split("T")[0] // today
-  );
-
-
+  const [toDate, setToDate] = useState(today.toISOString().split("T")[0]);
 
   // When sending to API
-  const fromDateTime = new Date(fromDate); // start of yesterday
+  const fromDateTime = new Date(fromDate);
   const toDateTime = new Date(toDate);
-  toDateTime.setHours(23, 59, 59, 999); // end of today
+  toDateTime.setHours(23, 59, 59, 999);
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(""); // debounced value
@@ -51,7 +48,7 @@ const LeadsPage: React.FC = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
-    }, 2000);
+    }, 3000);
 
     return () => {
       clearTimeout(handler);
@@ -59,7 +56,7 @@ const LeadsPage: React.FC = () => {
   }, [search]);
 
   const { data, isLoading, error, refetch } = useGetAllLeadQuery({
-    search: debouncedSearch, // use debounced value
+    search: debouncedSearch,
     fromDate: fromDateTime.toISOString(),
     toDate: toDateTime.toISOString(),
     ebookIds: selectedEbooks.map((eb) => eb.value),
@@ -67,8 +64,8 @@ const LeadsPage: React.FC = () => {
     limit,
   });
 
-  const leads: TLead[] = data?.data ?? [];
-  const total = leads.length ?? 0;
+  const leads: TLead[] = data?.data?.data ?? [];
+  const total = data?.data?.total ?? 0; // <-- get total from backend
   const totalPages = Math.ceil(total / limit);
 
   const formatDate = (dateString: string) =>
@@ -151,7 +148,10 @@ const LeadsPage: React.FC = () => {
               <label className="text-sm text-gray-600 mb-1">
                 Select Ebook(s)
               </label>
-              <AllEbookDropdown selectedEbooks={selectedEbooks} setSelectedEbooks={setSelectedEbooks} />
+              <AllEbookDropdown
+                selectedEbooks={selectedEbooks}
+                setSelectedEbooks={setSelectedEbooks}
+              />
             </div>
 
             {/* Download Button */}

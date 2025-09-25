@@ -21,8 +21,10 @@ export const leadApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Lead"], // invalidate cache after create
     }),
-
-    getAllLead: builder.query<TRes<TLead[]>, GetAllLeadParams | void>({
+    getAllLead: builder.query<
+      TRes<{ data: TLead[]; total: number }>,
+      GetAllLeadParams | void
+    >({
       query: (params) => {
         const queryParams = new URLSearchParams();
 

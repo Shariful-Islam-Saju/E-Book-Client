@@ -17,12 +17,6 @@ interface TEBookProps {
   >;
 }
 
-const dummyEbooks = [
-  { label: "JavaScript Basics", value: "ebook1" },
-  { label: "React Advanced", value: "ebook2" },
-  { label: "Node.js Guide", value: "ebook3" },
-  { label: "DSA in JS", value: "ebook4" },
-];
 
 const AllEbookDropdown = ({
   selectedEbooks,
