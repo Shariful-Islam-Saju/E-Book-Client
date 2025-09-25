@@ -19,6 +19,7 @@ export const leadApi = baseApi.injectEndpoints({
         method: "POST",
         body: userInfo,
       }),
+      invalidatesTags: ["Lead"], // invalidate cache after create
     }),
 
     getAllLead: builder.query<TRes<TLead[]>, GetAllLeadParams | void>({
@@ -42,6 +43,8 @@ export const leadApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
+      providesTags: ["Lead"], // provides cache tag
+      keepUnusedDataFor: 60, // cache data for 60 seconds
     }),
 
     deleteLead: builder.mutation({
@@ -49,6 +52,7 @@ export const leadApi = baseApi.injectEndpoints({
         url: `/lead/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Lead"], // invalidate cache after delete
     }),
   }),
 });

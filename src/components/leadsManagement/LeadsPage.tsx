@@ -1,10 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  useGetAllLeadQuery,
-  useDeleteLeadMutation,
-} from "@/redux/features/lead/leadApi";
+import React, { useState, useEffect } from "react";
+import { useGetAllLeadQuery } from "@/redux/features/lead/leadApi";
 import { User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -14,10 +11,8 @@ import LeadsNotFound from "./LeadsNotFound";
 import LeadError from "./LeadError";
 import LeadTable from "./LeadTable";
 import LeadDownload from "./LeadDownload";
-import DeleteConfirmModal from "../ConfirmationModal";
 
 import { TLead } from "@/types";
-import { toast } from "sonner";
 import { MultiSelect } from "react-multi-select-component";
 
 const dummyEbooks = [
@@ -27,31 +22,56 @@ const dummyEbooks = [
   { label: "DSA in JS", value: "ebook4" },
 ];
 
-const limitOptions = [100, 200, 500];
+const limitOptions = [10, 100, 200, 500];
 
 const LeadsPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(100);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  // Inputs for UI
+  const [fromDate, setFromDate] = useState(
+    yesterday.toISOString().split("T")[0] // yesterday
+  );
+  const [toDate, setToDate] = useState(
+    today.toISOString().split("T")[0] // today
+  );
+
+  // When sending to API
+  const fromDateTime = new Date(fromDate); // start of yesterday
+  const toDateTime = new Date(toDate);
+  toDateTime.setHours(23, 59, 59, 999); // end of today
 
   const [search, setSearch] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(""); // debounced value
+
   const [selectedEbooks, setSelectedEbooks] = useState<
     { label: string; value: string }[]
   >([]);
   const [selected, setSelected] = useState<string[]>([]);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // Debounce search input for 3 seconds
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 2000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
 
   const { data, isLoading, error, refetch } = useGetAllLeadQuery({
-    search,
-    fromDate,
-    toDate,
+    search: debouncedSearch, // use debounced value
+    fromDate: fromDateTime.toISOString(),
+    toDate: toDateTime.toISOString(),
     ebookIds: selectedEbooks.map((eb) => eb.value),
     page,
     limit,
   });
 
-  const [deleteLead] = useDeleteLeadMutation();
   const leads: TLead[] = data?.data ?? [];
   const total = leads.length ?? 0;
   const totalPages = Math.ceil(total / limit);
@@ -64,20 +84,6 @@ const LeadsPage: React.FC = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteLead(id).unwrap();
-      setSelected((prev) => prev.filter((sid) => sid !== id));
-      refetch();
-      toast.success("Lead deleted successfully!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to delete lead.");
-    } finally {
-      setDeleteId(null);
-    }
-  };
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) setPage(newPage);
@@ -201,7 +207,6 @@ const LeadsPage: React.FC = () => {
               leads={leads}
               selected={selected}
               setSelected={setSelected}
-              handleDelete={(id: string) => setDeleteId(id)}
               formatDate={formatDate}
             />
 
@@ -240,17 +245,6 @@ const LeadsPage: React.FC = () => {
           </>
         )}
       </div>
-
-      {/* Delete Modal */}
-      {deleteId && (
-        <DeleteConfirmModal
-          isOpen={!!deleteId}
-          onCancel={() => setDeleteId(null)}
-          onConfirm={() => handleDelete(deleteId)}
-          title="Delete Lead"
-          description="Are you sure you want to delete this lead? This action cannot be undone."
-        />
-      )}
     </div>
   );
 };

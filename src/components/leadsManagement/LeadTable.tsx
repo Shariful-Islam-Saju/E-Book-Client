@@ -16,12 +16,13 @@ import { Edit, Trash2 } from "lucide-react";
 import { TLead } from "@/types";
 import { motion } from "framer-motion";
 import ConfirmationModal from "../ConfirmationModal";
+import { useDeleteLeadMutation } from "@/redux/features/lead/leadApi";
+import { toast } from "sonner";
 
 interface LeadTableProps {
   leads: TLead[];
   selected: string[];
   setSelected: React.Dispatch<React.SetStateAction<string[]>>;
-  handleDelete: (id: string) => void;
   formatDate: (date: string) => string;
 }
 
@@ -29,10 +30,10 @@ const LeadTable: React.FC<LeadTableProps> = ({
   leads,
   selected,
   setSelected,
-  handleDelete,
   formatDate,
 }) => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLead] = useDeleteLeadMutation();
 
   const toggleSelectAll = () => {
     if (selected.length === leads.length) setSelected([]);
@@ -49,13 +50,23 @@ const LeadTable: React.FC<LeadTableProps> = ({
     setDeleteId(id);
   };
 
-  const handleConfirmDelete = () => {
-    if (deleteId) handleDelete(deleteId);
+  const handleCancelDelete = () => {
     setDeleteId(null);
   };
 
-  const handleCancelDelete = () => {
-    setDeleteId(null);
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      await deleteLead(deleteId).unwrap();
+      toast.success("Lead deleted successfully!");
+      setSelected((prev) => prev.filter((id) => id !== deleteId));
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete lead.");
+    } finally {
+      setDeleteId(null); // close modal
+    }
   };
 
   return (
@@ -109,8 +120,8 @@ const LeadTable: React.FC<LeadTableProps> = ({
                   {lead.address}
                 </TableCell>
                 <TableCell>
-                  {lead.ebook?.title ? (
-                    <Badge variant="secondary">{lead.ebook.title}</Badge>
+                  {lead.ebook?.[0]?.title ? (
+                    <Badge variant="secondary">{lead.ebook[0]?.title}</Badge>
                   ) : (
                     "-"
                   )}
@@ -118,13 +129,14 @@ const LeadTable: React.FC<LeadTableProps> = ({
                 <TableCell>{formatDate(lead.createdAt)}</TableCell>
                 <TableCell>{formatDate(lead.updatedAt)}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button
+                  {/* TODO: Add edit later */}
+                  {/* <Button
                     size="sm"
                     variant="outline"
                     className="gap-1 text-blue-600 border-blue-200"
                   >
                     <Edit className="w-4 h-4" /> Edit
-                  </Button>
+                  </Button> */}
                   <Button
                     onClick={() => confirmDelete(lead.id)}
                     size="sm"

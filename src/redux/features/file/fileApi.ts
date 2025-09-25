@@ -1,6 +1,5 @@
 import baseApi from "@/redux/api/baseApi";
-import { TRes } from "@/types";
-import { TEBook } from "@/types";
+import { TRes, TEBook } from "@/types";
 
 export const fileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,18 +8,33 @@ export const fileApi = baseApi.injectEndpoints({
         url: `/file/file-id/${id}`,
         method: "GET",
       }),
+      providesTags: (_result, _error, id) => [{ type: "File", id }], // cache by id
     }),
-    getAllFiles: builder.query<TRes<TEBook[]>, string>({
+
+    getAllFiles: builder.query<TRes<TEBook[]>, void>({
       query: () => ({
         url: `/file`,
         method: "GET",
       }),
+      providesTags: (result) =>
+        result?.data
+          ? [
+              ...result.data.map((file) => ({
+                type: "File" as const,
+                id: file.id,
+              })),
+              { type: "File", id: "LIST" },
+            ]
+          : [{ type: "File", id: "LIST" }],
+      keepUnusedDataFor: 600,
     }),
+
     getFileByName: builder.query<TRes<TEBook>, string>({
       query: (title: string) => ({
         url: `/file/file-name/${title}`,
         method: "GET",
       }),
+      providesTags: (_result, _error, title) => [{ type: "File", id: title }],
     }),
   }),
 });

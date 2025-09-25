@@ -11,5 +11,5 @@ export interface TLead {
   createdAt: string;
   updatedAt: string;
   ebook_imgurl: string | null;
-  ebook: Pick<TEBook, "title" | "url" | "slug"> | null;
+  ebook: (Pick<TEBook, "title" | "url" | "slug"> | null)[];
 }

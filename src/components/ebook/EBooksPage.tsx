@@ -86,7 +86,6 @@ const EBooksPage: React.FC = () => {
       transition: { duration: 0.8, ease: easeOut },
     },
   };
-  console.log(file);
 
   // Replace your button onClick handlers with this
   const handleDownloadClick = () => {
