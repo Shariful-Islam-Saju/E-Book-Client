@@ -1,15 +1,7 @@
 import baseApi from "@/redux/api/baseApi";
-import { TLead, TRes } from "@/types";
+import { TGetAllLeadParams, TLead, TRes } from "@/types";
 
-export interface GetAllLeadParams {
-  search?: string;
-  fromDate?: string;
-  toDate?: string;
-  ebookIds?: string[];
-  page?: number; // Pagination
-  limit?: number; // Items per page
-  [key: string]: any; // Future filters
-}
+
 
 export const leadApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -23,7 +15,7 @@ export const leadApi = baseApi.injectEndpoints({
     }),
     getAllLead: builder.query<
       TRes<{ data: TLead[]; total: number }>,
-      GetAllLeadParams | void
+      TGetAllLeadParams | void
     >({
       query: (params) => {
         const queryParams = new URLSearchParams();

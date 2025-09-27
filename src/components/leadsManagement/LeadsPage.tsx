@@ -19,23 +19,19 @@ const LeadsPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
 
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-
-  // Inputs for UI
-  const [fromDate, setFromDate] = useState(
-    yesterday.toISOString().split("T")[0]
-  );
-  const [toDate, setToDate] = useState(today.toISOString().split("T")[0]);
+  // Inputs for UI (no default values)
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   // When sending to API
-  const fromDateTime = new Date(fromDate);
-  const toDateTime = new Date(toDate);
-  toDateTime.setHours(23, 59, 59, 999);
+  const fromDateTime = fromDate ? new Date(fromDate) : null;
+  const toDateTime = toDate ? new Date(toDate) : null;
+  if (toDateTime) {
+    toDateTime.setHours(23, 59, 59, 999);
+  }
 
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState(""); // debounced value
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [selectedEbooks, setSelectedEbooks] = useState<
     { label: string; value: string }[]
@@ -48,22 +44,20 @@ const LeadsPage: React.FC = () => {
       setDebouncedSearch(search);
     }, 3000);
 
-    return () => {
-      clearTimeout(handler);
-    };
+    return () => clearTimeout(handler);
   }, [search]);
 
   const { data, isLoading, error, refetch } = useGetAllLeadQuery({
     search: debouncedSearch,
-    fromDate: fromDateTime.toISOString(),
-    toDate: toDateTime.toISOString(),
+    fromDate: fromDateTime ? fromDateTime.toISOString() : undefined,
+    toDate: toDateTime ? toDateTime.toISOString() : undefined,
     ebookIds: selectedEbooks.map((eb) => eb.value),
     page,
     limit,
   });
 
   const leads: TLead[] = data?.data?.data ?? [];
-  const total = data?.data?.total ?? 0; // <-- get total from backend
+  const total = data?.data?.total ?? 0;
   const totalPages = Math.ceil(total / limit);
 
   const formatDate = (dateString: string) =>
@@ -86,13 +80,13 @@ const LeadsPage: React.FC = () => {
     <div className="min-h-[80vh] bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Top Bar */}
       <div className="fixed top-16 lg:left-60 left-0 right-0 z-10 bg-white/95 backdrop-blur-lg border-b border-blue-200 shadow-sm">
-        <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row justify-between items-start gap-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           {/* Title & Stats */}
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-6 w-full lg:w-auto">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">
               Leads Management
             </h1>
-            <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex flex-wrap items-center gap-3 mt-2 lg:mt-0">
               <div className="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full">
                 <User className="w-4 h-4 text-blue-600" />
                 <span className="text-sm font-medium text-blue-700">
@@ -108,9 +102,9 @@ const LeadsPage: React.FC = () => {
           </div>
 
           {/* Filters & Actions */}
-          <div className="flex flex-wrap gap-3 w-full lg:w-auto items-end">
-            {/* Shared input style */}
-            <div className="flex flex-col min-w-[200px] flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-3 w-full lg:w-auto items-end">
+            {/* Search */}
+            <div className="flex flex-col min-w-[200px]">
               <Input
                 placeholder="Search leads..."
                 value={search}
@@ -120,7 +114,7 @@ const LeadsPage: React.FC = () => {
             </div>
 
             {/* From Date */}
-            <div className="flex flex-col min-w-[150px] flex-1">
+            <div className="flex flex-col min-w-[150px]">
               <label className="text-sm text-gray-600 mb-1">From</label>
               <Input
                 type="date"
@@ -131,7 +125,7 @@ const LeadsPage: React.FC = () => {
             </div>
 
             {/* To Date */}
-            <div className="flex flex-col min-w-[150px] flex-1">
+            <div className="flex flex-col min-w-[150px]">
               <label className="text-sm text-gray-600 mb-1">To</label>
               <Input
                 type="date"
@@ -142,7 +136,7 @@ const LeadsPage: React.FC = () => {
             </div>
 
             {/* Ebook MultiSelect */}
-            <div className="flex flex-col min-w-[200px] flex-1">
+            <div className="flex flex-col min-w-[200px]">
               <label className="text-sm text-gray-600 mb-1">
                 Select Ebook(s)
               </label>
@@ -158,13 +152,19 @@ const LeadsPage: React.FC = () => {
             </div>
 
             {/* Limit Selector */}
-            <RowsPerPage limit={limit} setLimit={setLimit} setPage={setPage} />
+            <div className="flex items-end">
+              <RowsPerPage
+                limit={limit}
+                setLimit={setLimit}
+                setPage={setPage}
+              />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="mx-auto pt-32 pb-12 px-6">
+      <div className="mx-auto px-6 pb-12 pt-[550px] sm:pt-[350px] md:pt-[400px] lg:pt-[100px]">
         {isLoading ? (
           <LeadLoading viewMode="grid" />
         ) : leads.length === 0 ? (
@@ -178,11 +178,13 @@ const LeadsPage: React.FC = () => {
               formatDate={formatDate}
             />
 
-            <Pagination
-              page={page}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+            <div className="mt-6 flex justify-center lg:justify-end">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
           </>
         )}
       </div>

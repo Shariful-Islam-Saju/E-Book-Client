@@ -56,7 +56,7 @@ const baseQueryWithRefreshToken = async (
 const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithRefreshToken,
-  tagTypes: ["User", "Lead", "File"], // add more tags as needed
+  tagTypes: ["User", "Lead", "File", "Review"], // add more tags as needed
   endpoints: () => ({}),
 });
 

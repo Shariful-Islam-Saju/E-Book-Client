@@ -125,7 +125,7 @@ const EBookTable: React.FC<EBookTableProps> = ({ ebooks }) => {
                           <div className="flex justify-center space-x-2">
                             <Link href={ebook.url} className="h-8">
                               <Download className="w-4 h-4 mr-1" />
-                              Download
+                              
                             </Link>
                           </div>
                         ) : (

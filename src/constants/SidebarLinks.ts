@@ -1,4 +1,4 @@
-import { FileText, Users } from "lucide-react";
+import { FileText, Star, Users } from "lucide-react";
 
 export const sidebarLinks = [
   {
@@ -10,5 +10,10 @@ export const sidebarLinks = [
     title: "EBook Library",
     href: "/dashboard/ebook-library",
     icon: FileText, // Represents PDF files
+  },
+  {
+    title: "Review Management",
+    href: "/dashboard/review-management",
+    icon: Star, // Represents reviews/ratings
   },
 ];

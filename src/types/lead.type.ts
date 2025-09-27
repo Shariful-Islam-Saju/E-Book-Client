@@ -13,3 +13,13 @@ export interface TLead {
   ebook_imgurl: string | null;
   ebook: (Pick<TEBook, "title" | "url" | "slug"> | null)[];
 }
+
+export interface TGetAllLeadParams {
+  search?: string;
+  fromDate?: string;
+  toDate?: string;
+  ebookIds?: string[];
+  page?: number; // Pagination
+  limit?: number; // Items per page
+  [key: string]: any; // Future filters
+}
