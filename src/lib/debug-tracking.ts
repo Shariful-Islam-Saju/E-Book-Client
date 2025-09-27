@@ -62,8 +62,40 @@ export const debugTracking = {
     }
   },
 
+  // Test ViewContent event with product details
+  testViewContent: () => {
+    if (window.fbq) {
+      console.log("Testing ViewContent event with product details...");
+      window.fbq("track", "ViewContent", {
+        content_name: "Test EBook",
+        content_category: "Ebook",
+        content_type: "product",
+        content_ids: ["TEST-001"],
+        value: 1550,
+        currency: "BDT",
+        contents: [
+          {
+            id: "TEST-001",
+            quantity: 1,
+            item_price: 1550,
+          },
+        ],
+        delivery_category: "digital_download",
+      });
+      console.log("ViewContent test event sent with product details");
+    } else {
+      console.error("Meta Pixel not available for testing");
+    }
+  },
+
   // Run all debug checks
-  runAllChecks: () => {},
+  runAllChecks: () => {
+    debugTracking.checkMetaPixel();
+    debugTracking.checkTikTokPixel();
+    debugTracking.testMetaPixel();
+    debugTracking.testTikTokPixel();
+    debugTracking.testViewContent();
+  },
 };
 
 // Make it available globally for easy debugging

@@ -87,6 +87,8 @@ const EBookTable: React.FC<EBookTableProps> = ({ ebooks }) => {
                                 src={ebook.imgUrl}
                                 alt={ebook.title}
                                 className="w-full h-full object-cover"
+                                width={120}
+                                height={100}
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">

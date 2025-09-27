@@ -62,7 +62,8 @@ const EBooksPage: React.FC = () => {
   // Track ebook view when file data is loaded
   useEffect(() => {
     if (file && file.id && file.title) {
-      trackEbookView(file.title, file.id);
+      const discountedPrice = file.bookPrice - file.discount;
+      trackEbookView(file.title, file.id, discountedPrice, "BDT");
     }
   }, [file, trackEbookView]);
 
@@ -171,7 +172,6 @@ const EBooksPage: React.FC = () => {
                   {/* Discounted Price */}
                   <span className="text-2xl font-extrabold text-emerald-400">
                     ৳{file.bookPrice - file.discount} টাকা
-
                   </span>
                 </div>
               </div>

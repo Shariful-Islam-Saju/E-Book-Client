@@ -7,7 +7,12 @@ import "@/lib/debug-tracking"; // Import debug utility
 interface TrackingContextType {
   trackPageView: (pageName?: string) => void;
   trackLead: (formName?: string) => void;
-  trackEbookView: (ebookTitle: string, ebookId: string) => void;
+  trackEbookView: (
+    ebookTitle: string,
+    ebookId: string,
+    price?: number,
+    currency?: string
+  ) => void;
   trackEbookDownload: (
     ebookTitle: string,
     ebookId: string,
@@ -34,8 +39,12 @@ export function TrackingProvider({ children }: TrackingProviderProps) {
     trackPageView: (pageName?: string) =>
       trackingManager.trackPageView(pageName),
     trackLead: (formName?: string) => trackingManager.trackLead(formName),
-    trackEbookView: (ebookTitle: string, ebookId: string) =>
-      trackingManager.trackEbookView(ebookTitle, ebookId),
+    trackEbookView: (
+      ebookTitle: string,
+      ebookId: string,
+      price?: number,
+      currency?: string
+    ) => trackingManager.trackEbookView(ebookTitle, ebookId, price, currency),
     trackEbookDownload: (ebookTitle: string, ebookId: string, value?: number) =>
       trackingManager.trackEbookDownload(ebookTitle, ebookId, value),
     trackRegistration: () => trackingManager.trackRegistration(),

@@ -156,6 +156,8 @@ const EditEBookModal: React.FC<EditEBookModalProps> = ({
                     src={previewImage || ebook.imgUrl || ""}
                     alt="preview"
                     className="w-20 h-20 object-cover rounded mt-2"
+                    width={80}
+                    height={80}
                   />
                 </div>
 

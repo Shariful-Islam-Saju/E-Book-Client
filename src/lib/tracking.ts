@@ -23,10 +23,17 @@ export interface MetaPixelEvent extends TrackingEvent {
   parameters?: {
     content_name?: string;
     content_category?: string;
+    content_type?: string;
     value?: number;
     currency?: string;
     content_ids?: string[];
+    contents?: Array<{
+      id: string;
+      quantity: number;
+      item_price?: number;
+    }>;
     num_items?: number;
+    delivery_category?: string;
     [key: string]: any;
   };
 }
@@ -173,7 +180,14 @@ class TrackingManager {
 
   // Convenience methods for common events
   trackPageView(pageName?: string): void {
-    this.trackBoth({
+    // Track PageView for Meta Pixel
+    this.trackMetaPixel({
+      event: "PageView",
+      parameters: pageName ? { content_name: pageName } : undefined,
+    });
+
+    // Track ViewContent for TikTok
+    this.trackTikTok({
       event: "ViewContent",
       parameters: pageName ? { content_name: pageName } : undefined,
     });
@@ -186,13 +200,31 @@ class TrackingManager {
     });
   }
 
-  trackEbookView(ebookTitle: string, ebookId: string): void {
+  trackEbookView(
+    ebookTitle: string,
+    ebookId: string,
+    price?: number,
+    currency: string = "BDT"
+  ): void {
     this.trackBoth({
       event: "ViewContent",
       parameters: {
         content_name: ebookTitle,
         content_category: "Ebook",
+        content_type: "product",
         content_ids: [ebookId],
+        value: price || 0,
+        currency: currency,
+        contents: price
+          ? [
+              {
+                id: ebookId,
+                quantity: 1,
+                item_price: price,
+              },
+            ]
+          : undefined,
+        delivery_category: "digital_download",
       },
     });
   }
@@ -229,8 +261,12 @@ export const trackPageView = (pageName?: string) =>
   trackingManager.trackPageView(pageName);
 export const trackLead = (formName?: string) =>
   trackingManager.trackLead(formName);
-export const trackEbookView = (ebookTitle: string, ebookId: string) =>
-  trackingManager.trackEbookView(ebookTitle, ebookId);
+export const trackEbookView = (
+  ebookTitle: string,
+  ebookId: string,
+  price?: number,
+  currency: string = "BDT"
+) => trackingManager.trackEbookView(ebookTitle, ebookId, price, currency);
 export const trackEbookDownload = (
   ebookTitle: string,
   ebookId: string,

@@ -3,8 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useGetAllLeadQuery } from "@/redux/features/lead/leadApi";
 import { User } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LeadLoading from "./LeadLoading";
 import LeadsNotFound from "./LeadsNotFound";
@@ -16,7 +14,6 @@ import { TLead } from "@/types";
 import AllEbookDropdown from "./AllEbookDropdown";
 import RowsPerPage from "../RowPerPage";
 import Pagination from "../Pagination";
-
 
 const LeadsPage: React.FC = () => {
   const [page, setPage] = useState(1);
