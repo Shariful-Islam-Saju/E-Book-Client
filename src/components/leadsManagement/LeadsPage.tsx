@@ -14,8 +14,9 @@ import LeadDownload from "./LeadDownload";
 
 import { TLead } from "@/types";
 import AllEbookDropdown from "./AllEbookDropdown";
+import RowsPerPage from "../RowPerPage";
+import Pagination from "../Pagination";
 
-const limitOptions = [50, 100, 200, 500];
 
 const LeadsPage: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -160,25 +161,7 @@ const LeadsPage: React.FC = () => {
             </div>
 
             {/* Limit Selector */}
-            <div className="flex flex-col min-w-[120px] flex-1">
-              <label className="text-sm text-gray-600 mb-1">
-                Rows per page
-              </label>
-              <select
-                value={limit}
-                onChange={(e) => {
-                  setLimit(Number(e.target.value));
-                  setPage(1);
-                }}
-                className="h-10 border border-blue-200 rounded px-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 w-full"
-              >
-                {limitOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt} per page
-                  </option>
-                ))}
-              </select>
-            </div>
+            <RowsPerPage limit={limit} setLimit={setLimit} setPage={setPage} />
           </div>
         </div>
       </div>
@@ -198,38 +181,11 @@ const LeadsPage: React.FC = () => {
               formatDate={formatDate}
             />
 
-            {/* Pagination */}
-            <div className="flex justify-center mt-6 items-center gap-2 flex-wrap">
-              <Button
-                disabled={page === 1}
-                onClick={() => handlePageChange(page - 1)}
-                size="sm"
-                variant="outline"
-              >
-                Prev
-              </Button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <Button
-                  key={p}
-                  onClick={() => handlePageChange(p)}
-                  size="sm"
-                  variant={p === page ? "default" : "outline"}
-                  className={p === page ? "bg-blue-600 text-white" : ""}
-                >
-                  {p}
-                </Button>
-              ))}
-
-              <Button
-                disabled={page === totalPages}
-                onClick={() => handlePageChange(page + 1)}
-                size="sm"
-                variant="outline"
-              >
-                Next
-              </Button>
-            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </>
         )}
       </div>
