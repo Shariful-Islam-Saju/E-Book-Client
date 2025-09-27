@@ -81,7 +81,7 @@ class TrackingManager {
       script.src = src;
       script.async = true;
       script.defer = true;
-      script.crossOrigin = "anonymous";
+      // Remove crossOrigin to avoid CORS issues with Meta Pixel
       script.onload = () => resolve();
       script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
 
@@ -95,32 +95,25 @@ class TrackingManager {
     }
 
     try {
-      // Initialize Meta Pixel
+      // Wait for Meta Pixel to be loaded from layout.tsx
       if (this.metaPixelId) {
-        // Set up fbq function before loading script
-        window.fbq =
-          window.fbq ||
-          function (...args: any[]) {
-            (window.fbq.q = window.fbq.q || []).push(args);
-          };
+        // Wait for fbq to be available (loaded from layout.tsx)
+        let attempts = 0;
+        const maxAttempts = 50; // 5 seconds max wait
 
-        // Load the script
-        await this.loadScript(
-          `https://connect.facebook.net/en_US/fbevents.js`,
-          "meta-pixel-script"
-        );
+        while (!window.fbq && attempts < maxAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+          attempts++;
+        }
 
-        // Wait a bit for script to fully load
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        // Initialize Meta Pixel
-        window.fbq("init", this.metaPixelId);
-
-        // Track PageView
-        window.fbq("track", "PageView");
+        if (window.fbq) {
+          console.log("Meta Pixel loaded successfully");
+        } else {
+          console.warn("Meta Pixel not loaded after waiting");
+        }
       }
 
-      // Initialize TikTok Pixel
+      // Initialize TikTok Pixel if needed
       if (this.tiktokPixelId) {
         // Set up ttq function before loading script
         window.ttq =
@@ -180,12 +173,7 @@ class TrackingManager {
 
   // Convenience methods for common events
   trackPageView(pageName?: string): void {
-    // Track PageView for Meta Pixel
-    this.trackMetaPixel({
-      event: "PageView",
-      parameters: pageName ? { content_name: pageName } : undefined,
-    });
-
+    // PageView is already tracked in layout.tsx, so we only track additional page views
     // Track ViewContent for TikTok
     this.trackTikTok({
       event: "ViewContent",

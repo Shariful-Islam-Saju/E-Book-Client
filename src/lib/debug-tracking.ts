@@ -10,11 +10,25 @@ export const debugTracking = {
 
     if (window.fbq) {
       console.log("Meta Pixel function:", window.fbq.toString());
+      console.log("Meta Pixel loaded:", window.fbq.loaded || false);
+      console.log("Meta Pixel version:", window.fbq.version || "unknown");
     }
 
     // Check if script is loaded
-    const script = document.getElementById("meta-pixel-script");
-    console.log("Script element exists:", !!script);
+    const scripts = document.querySelectorAll('script[src*="fbevents.js"]');
+    console.log("Meta Pixel script elements found:", scripts.length);
+
+    // Check for pixel in DOM
+    const pixelImages = document.querySelectorAll(
+      'img[src*="facebook.com/tr"]'
+    );
+    console.log("Meta Pixel images found:", pixelImages.length);
+
+    // Check for noscript pixel
+    const noscriptPixels = document.querySelectorAll(
+      'noscript img[src*="facebook.com/tr"]'
+    );
+    console.log("Noscript pixels found:", noscriptPixels.length);
   },
 
   // Check if TikTok Pixel is loaded and working
@@ -88,6 +102,28 @@ export const debugTracking = {
     }
   },
 
+  // Verify pixel is working by checking network requests
+  verifyPixelRequests: () => {
+    console.log("=== PIXEL VERIFICATION ===");
+
+    // Check if we can see pixel requests in the network
+    const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+    if (pixelId) {
+      console.log(
+        "Expected pixel URL pattern: https://www.facebook.com/tr?id=" + pixelId
+      );
+      console.log("Check Network tab for requests to facebook.com/tr");
+      console.log("Look for requests with your pixel ID:", pixelId);
+    }
+
+    // Test a simple event to trigger a request
+    if (window.fbq) {
+      console.log("Sending test event to trigger pixel request...");
+      window.fbq("track", "TestEvent", { test: true });
+      console.log("Check Network tab for the request");
+    }
+  },
+
   // Run all debug checks
   runAllChecks: () => {
     debugTracking.checkMetaPixel();
@@ -95,6 +131,7 @@ export const debugTracking = {
     debugTracking.testMetaPixel();
     debugTracking.testTikTokPixel();
     debugTracking.testViewContent();
+    debugTracking.verifyPixelRequests();
   },
 };
 
