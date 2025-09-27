@@ -34,6 +34,7 @@ export interface MetaPixelEvent extends TrackingEvent {
     }>;
     num_items?: number;
     delivery_category?: string;
+    test_event_code?: string;
     [key: string]: any;
   };
 }
@@ -61,6 +62,7 @@ class TrackingManager {
   private metaPixelId: string | null = null;
   private tiktokPixelId: string | null = null;
   private isInitialized = false;
+  private testEventCode: string = "TEST72918"; // Facebook test event code
 
   constructor() {
     if (typeof window !== "undefined") {
@@ -148,7 +150,13 @@ class TrackingManager {
     }
 
     try {
-      window.fbq("track", event.event, event.parameters);
+      // Add test event code to all events for real-time testing
+      const parametersWithTestCode = {
+        ...event.parameters,
+        test_event_code: this.testEventCode,
+      };
+
+      window.fbq("track", event.event, parametersWithTestCode);
     } catch (error) {
       console.error("Failed to track Meta Pixel event:", error);
     }

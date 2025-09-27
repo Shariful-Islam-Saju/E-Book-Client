@@ -55,8 +55,9 @@ export const debugTracking = {
       window.fbq("track", "TestEvent", {
         content_name: "Debug Test",
         test: true,
+        test_event_code: "TEST72918",
       });
-      console.log("Meta Pixel test event sent");
+      console.log("Meta Pixel test event sent with test code");
     } else {
       console.error("Meta Pixel not available for testing");
     }
@@ -95,8 +96,11 @@ export const debugTracking = {
           },
         ],
         delivery_category: "digital_download",
+        test_event_code: "TEST72918",
       });
-      console.log("ViewContent test event sent with product details");
+      console.log(
+        "ViewContent test event sent with product details and test code"
+      );
     } else {
       console.error("Meta Pixel not available for testing");
     }
@@ -119,8 +123,14 @@ export const debugTracking = {
     // Test a simple event to trigger a request
     if (window.fbq) {
       console.log("Sending test event to trigger pixel request...");
-      window.fbq("track", "TestEvent", { test: true });
+      window.fbq("track", "TestEvent", {
+        test: true,
+        test_event_code: "TEST72918",
+      });
       console.log("Check Network tab for the request");
+      console.log(
+        "Check Facebook Event Manager for real-time events with test code TEST72918"
+      );
     }
   },
 
