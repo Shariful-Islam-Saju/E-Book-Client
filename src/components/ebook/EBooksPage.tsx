@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import { motion, Variants, easeOut } from "framer-motion";
 import { useGetSingleFileQuery } from "@/redux/features/file/fileApi";
 import { TEBook } from "@/types";
-import { ArrowDown } from "lucide-react";
 import Reviews from "../Reviews";
 import LeadForm from "../LeadForm";
 import EbookPageSkeleton from "./EbookPageSkeleton";
@@ -25,7 +24,7 @@ const EBooksPage: React.FC = () => {
   const MotionImage = motion.create(Image);
   const params = useParams();
   const [yOffset, setYOffset] = useState(100);
-  const [showForm, setShowForm] = useState(false);
+  // const [showForm, setShowForm] = useState(false);
   const { trackEbookView } = useTracking();
   useEffect(() => {
     const updateYOffset = () => {
@@ -42,16 +41,16 @@ const EBooksPage: React.FC = () => {
     return () => window.removeEventListener("resize", updateYOffset);
   }, [yOffset, setYOffset]);
   // ✅ Scroll into view after form becomes visible
-  useEffect(() => {
-    if (showForm) {
-      const el = document.querySelector("#lead-form");
-      if (el) {
-        setTimeout(() => {
-          el.scrollIntoView({ behavior: "smooth", block: "center" });
-        }, 50); // small delay ensures DOM is updated
-      }
-    }
-  }, [showForm]);
+  // useEffect(() => {
+  //   if (showForm) {
+  //     const el = document.querySelector("#lead-form");
+  //     if (el) {
+  //       setTimeout(() => {
+  //         el.scrollIntoView({ behavior: "smooth", block: "center" });
+  //       }, 50); // small delay ensures DOM is updated
+  //     }
+  //   }
+  // }, [showForm]);
 
   let id = params?.id;
   if (Array.isArray(id)) id = id[0];
@@ -89,22 +88,22 @@ const EBooksPage: React.FC = () => {
   };
 
   // Replace your button onClick handlers with this
-  const handleDownloadClick = () => {
-    if (!showForm) {
-      setShowForm(true);
-      setTimeout(() => {
-        const el = document.querySelector("#lead-form");
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-      }, 100); // wait for DOM update
-    } else {
-      const el = document.querySelector("#lead-form");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    }
-  };
+  // const handleDownloadClick = () => {
+  //   if (!showForm) {
+  //     setShowForm(true);
+  //     setTimeout(() => {
+  //       const el = document.querySelector("#lead-form");
+  //       if (el) {
+  //         el.scrollIntoView({ behavior: "smooth", block: "center" });
+  //       }
+  //     }, 100); // wait for DOM update
+  //   } else {
+  //     const el = document.querySelector("#lead-form");
+  //     if (el) {
+  //       el.scrollIntoView({ behavior: "smooth", block: "center" });
+  //     }
+  //   }
+  // };
 
   return (
     <div
@@ -177,7 +176,7 @@ const EBooksPage: React.FC = () => {
               </div>
 
               {/* Button */}
-              <div className="flex justify-center lg:justify-start">
+              {/* <div className="flex justify-center lg:justify-start">
                 <button
                   onClick={handleDownloadClick}
                   className="relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-md px-4 py-2 bg-[rgb(37,177,112)] text-white transition-all"
@@ -186,7 +185,7 @@ const EBooksPage: React.FC = () => {
                     ডাউনলোড করুন <ArrowDown className="h-4 w-4" />
                   </span>
                 </button>
-              </div>
+              </div> */}
             </motion.div>
           </div>
         </div>
@@ -194,10 +193,7 @@ const EBooksPage: React.FC = () => {
 
       {/* Form + Download Counter */}
       <motion.section
-        className={`mb-16 max-w-6xl mx-auto z-50 mt-14 ${
-          showForm ? "block" : "hidden"
-        }`}
-        initial="hidden"
+        className={`mb-16 max-w-6xl mx-auto z-50 mt-14 lg:mt-36 `}
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
         variants={fadeUpVariant}
@@ -216,7 +212,7 @@ const EBooksPage: React.FC = () => {
         </div>
       </motion.section>
 
-      <motion.section
+      {/* <motion.section
         className={`mb-16 max-w-6xl mx-auto z-50 mt-20 lg:mt-32 ${
           showForm ? "hidden" : "block"
         }`}
@@ -228,7 +224,7 @@ const EBooksPage: React.FC = () => {
         <div className="z-50  rounded-2xl  overflow-hidden flex justify-center">
           <DownloadCounter />
         </div>
-      </motion.section>
+      </motion.section> */}
 
       {/* Reviews */}
       <motion.section
@@ -246,16 +242,7 @@ const EBooksPage: React.FC = () => {
           নিয়েছে।
         </p>
         <Reviews reviews={file.reviews ?? []} />
-        <div className="flex justify-center ">
-          <button
-            onClick={handleDownloadClick}
-            className="relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-md px-4 py-2 bg-[rgb(37,177,112)] text-white transition-all"
-          >
-            <span className="relative flex items-center gap-2 font-bold text-lg">
-              ডাউনলোড করুন <ArrowDown className="h-4 w-4" />
-            </span>
-          </button>
-        </div>
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
