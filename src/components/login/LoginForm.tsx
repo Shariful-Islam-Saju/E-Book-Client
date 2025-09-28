@@ -16,10 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useAppDispatch } from "@/redux/hook";
 import { setuser } from "@/redux/features/auth/authSlice";
 
-const defaultValues = {
-  mobile: "01617134236",
-  password: "sajukhan",
-};
+
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +31,6 @@ const LoginForm = () => {
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues,
   });
 
   const onSubmit = async (data: LoginFormValues) => {
