@@ -77,16 +77,16 @@ const LeadsPage: React.FC = () => {
     return <LeadError onRetry={refetch} errorMessage="Failed to load leads." />;
 
   return (
-    <div className="min-h-[80vh] bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-[80vh] min-w-[1500px] bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Top Bar */}
-      <div className="fixed top-16 lg:left-60 left-0 right-0 z-10 bg-white/95 backdrop-blur-lg border-b border-blue-200 shadow-sm">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="fixed min-w-[1500px] top-16 left-0 lg:left-60 right-0 z-10 bg-white/95 backdrop-blur-lg border-b border-blue-200 shadow-sm">
+        <div className="mx-auto px-8 py-4 flex flex-row items-center justify-between gap-4">
           {/* Title & Stats */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-6 w-full lg:w-auto">
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+          <div className="flex flex-row items-center gap-6 w-auto">
+            <h1 className="text-2xl font-bold text-gray-900">
               Leads Management
             </h1>
-            <div className="flex flex-wrap items-center gap-3 mt-2 lg:mt-0">
+            <div className="flex flex-row items-center gap-3">
               <div className="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full">
                 <User className="w-4 h-4 text-blue-600" />
                 <span className="text-sm font-medium text-blue-700">
@@ -102,41 +102,41 @@ const LeadsPage: React.FC = () => {
           </div>
 
           {/* Filters & Actions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-3 w-full lg:w-auto items-end">
+          <div className="flex flex-row flex-wrap gap-3 items-end">
             {/* Search */}
-            <div className="flex flex-col min-w-[200px]">
+            <div className="flex flex-col w-[200px]">
               <Input
                 placeholder="Search leads..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-10 border-blue-200 focus:border-blue-400 w-full"
+                className="h-10 border-blue-200 focus:border-blue-400"
               />
             </div>
 
             {/* From Date */}
-            <div className="flex flex-col min-w-[150px]">
+            <div className="flex flex-col w-[150px]">
               <label className="text-sm text-gray-600 mb-1">From</label>
               <Input
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="h-10 border-blue-200 w-full"
+                className="h-10 border-blue-200"
               />
             </div>
 
             {/* To Date */}
-            <div className="flex flex-col min-w-[150px]">
+            <div className="flex flex-col w-[150px]">
               <label className="text-sm text-gray-600 mb-1">To</label>
               <Input
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="h-10 border-blue-200 w-full"
+                className="h-10 border-blue-200"
               />
             </div>
 
             {/* Ebook MultiSelect */}
-            <div className="flex flex-col min-w-[200px]">
+            <div className="flex flex-col w-[200px]">
               <label className="text-sm text-gray-600 mb-1">
                 Select Ebook(s)
               </label>
@@ -164,7 +164,7 @@ const LeadsPage: React.FC = () => {
       </div>
 
       {/* Table */}
-      <div className="mx-auto px-6 pb-12 pt-[550px] sm:pt-[350px] md:pt-[400px] lg:pt-[100px]">
+      <div className="mx-auto min-w-[1500px] px-6 pb-12 mt-24">
         {isLoading ? (
           <LeadLoading viewMode="grid" />
         ) : leads.length === 0 ? (
@@ -178,7 +178,7 @@ const LeadsPage: React.FC = () => {
               formatDate={formatDate}
             />
 
-            <div className="mt-6 flex justify-center lg:justify-end">
+            <div className="mt-6 flex justify-end">
               <Pagination
                 page={page}
                 totalPages={totalPages}

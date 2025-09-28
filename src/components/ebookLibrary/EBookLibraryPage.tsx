@@ -6,6 +6,8 @@ import { Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import EBookTable from "./EBookTable";
 import CreateEBookModal from "./CreateEBookModal";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 const EBookLibraryPage = () => {
   const [search, setSearch] = useState("");
@@ -38,19 +40,19 @@ const EBookLibraryPage = () => {
         <h1 className="text-3xl font-bold text-gray-900">EBook Library</h1>
 
         <div className="flex items-center gap-3">
-          <input
+          <Input
             type="text"
             placeholder="Search ebooks..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-xs border border-blue-300 rounded px-3 py-2 focus:ring-1 focus:ring-blue-400"
           />
-          <button
+          <Button
             onClick={() => setIsCreateOpen(true)}
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
           >
             <Plus className="w-5 h-5" /> Add EBook
-          </button>
+          </Button>
         </div>
       </div>
 
