@@ -5,6 +5,7 @@ import { Star } from "lucide-react";
 import React, { useEffect, useRef } from "react";
 import { Hind_Siliguri } from "next/font/google";
 import { TReview } from "@/types";
+import Image from "next/image";
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ["latin", "bengali"],
@@ -126,10 +127,12 @@ const Reviews = ({ reviews }: ReviewsProps) => {
                 {/* Reviewer Avatar */}
                 <div className="w-10 h-10 rounded-full flex items-center justify-center bg-slate-200 text-slate-800 font-medium text-sm overflow-hidden">
                   {review.profileImg ? (
-                    <img
+                    <Image
                       src={review.profileImg}
                       alt={review.reviewBy}
                       className="w-full h-full object-cover"
+                      width={100}
+                      height={100}
                     />
                   ) : (
                     <span>{review.reviewBy.charAt(0).toUpperCase()}</span>

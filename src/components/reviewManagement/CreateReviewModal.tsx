@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { useCreateReviewMutation } from "@/redux/features/review/reviewApi";
 import { useGetAllFilesQuery } from "@/redux/features/file/fileApi";
+import Image from "next/image";
 
 interface FormValues {
   title: string;
@@ -203,10 +204,12 @@ const CreateReviewModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                     onChange={handleImageChange}
                   />
                   {previewImg && (
-                    <img
+                    <Image
                       src={previewImg}
                       alt="preview"
                       className="w-20 h-20 object-cover rounded mt-2"
+                      width={200}
+                      height={200}
                     />
                   )}
                 </div>
