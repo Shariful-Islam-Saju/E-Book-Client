@@ -26,6 +26,8 @@ interface LeadFormProps {
   ebookId: string;
   downloadUrl?: string;
   ebookTitle?: string;
+  ebookPrice?: number;
+  currency?: string;
 }
 
 // ✅ Convert Bangla digits to English digits
@@ -42,6 +44,8 @@ const LeadForm: React.FC<LeadFormProps> = ({
   ebookId,
   downloadUrl,
   ebookTitle,
+  ebookPrice,
+  currency = "BDT",
 }) => {
   const [createLead, { isLoading }] = useCreateLeadMutation();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -123,11 +127,16 @@ const LeadForm: React.FC<LeadFormProps> = ({
               link.click();
               document.body.removeChild(link);
 
-              // Track successful download
-              trackEbookDownload(ebookTitle || "Ebook", ebookId, 0);
+              // Track successful download as Purchase event
+              trackEbookDownload(
+                ebookTitle || "Ebook",
+                ebookId,
+                ebookPrice || 0,
+                currency
+              );
 
               router.push("/thank-you");
-              return  "ডাউনলোড সফলভাবে সম্পন্ন হয়েছে";
+              return "ডাউনলোড সফলভাবে সম্পন্ন হয়েছে";
             } else {
               toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
             }

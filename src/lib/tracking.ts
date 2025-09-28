@@ -403,7 +403,8 @@ class TrackingManager {
   trackEbookDownload(
     ebookTitle: string,
     ebookId: string,
-    value?: number
+    value?: number,
+    currency: string = "BDT"
   ): void {
     this.trackBoth({
       event: "Purchase",
@@ -412,7 +413,7 @@ class TrackingManager {
         content_category: "Ebook",
         content_ids: [ebookId],
         value: value || 0,
-        currency: "USD",
+        currency: currency,
       },
     });
   }
@@ -441,6 +442,7 @@ export const trackEbookView = (
 export const trackEbookDownload = (
   ebookTitle: string,
   ebookId: string,
-  value?: number
-) => trackingManager.trackEbookDownload(ebookTitle, ebookId, value);
+  value?: number,
+  currency: string = "BDT"
+) => trackingManager.trackEbookDownload(ebookTitle, ebookId, value, currency);
 export const trackRegistration = () => trackingManager.trackRegistration();

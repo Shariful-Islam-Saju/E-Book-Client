@@ -16,7 +16,8 @@ interface TrackingContextType {
   trackEbookDownload: (
     ebookTitle: string,
     ebookId: string,
-    value?: number
+    value?: number,
+    currency?: string
   ) => void;
   trackRegistration: () => void;
 }
@@ -45,8 +46,13 @@ export function TrackingProvider({ children }: TrackingProviderProps) {
       price?: number,
       currency?: string
     ) => trackingManager.trackEbookView(ebookTitle, ebookId, price, currency),
-    trackEbookDownload: (ebookTitle: string, ebookId: string, value?: number) =>
-      trackingManager.trackEbookDownload(ebookTitle, ebookId, value),
+    trackEbookDownload: (
+      ebookTitle: string,
+      ebookId: string,
+      value?: number,
+      currency?: string
+    ) =>
+      trackingManager.trackEbookDownload(ebookTitle, ebookId, value, currency),
     trackRegistration: () => trackingManager.trackRegistration(),
   };
 
