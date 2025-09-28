@@ -55,9 +55,20 @@ export const debugTracking = {
       window.fbq("track", "TestEvent", {
         content_name: "Debug Test",
         test: true,
-        test_event_code: "TEST72918",
+        ...(process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE
+          ? {
+              test_event_code:
+                process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE,
+            }
+          : {}),
       });
-      console.log("Meta Pixel test event sent with test code");
+      if (process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE) {
+        console.log(
+          `Meta Pixel test event sent with test code ${process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE}`
+        );
+      } else {
+        console.log("Meta Pixel test event sent");
+      }
     } else {
       console.error("Meta Pixel not available for testing");
     }
@@ -96,11 +107,20 @@ export const debugTracking = {
           },
         ],
         delivery_category: "digital_download",
-        test_event_code: "TEST72918",
+        ...(process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE
+          ? {
+              test_event_code:
+                process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE,
+            }
+          : {}),
       });
-      console.log(
-        "ViewContent test event sent with product details and test code"
-      );
+      if (process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE) {
+        console.log(
+          `ViewContent test event sent with product details and test code ${process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE}`
+        );
+      } else {
+        console.log("ViewContent test event sent with product details");
+      }
     } else {
       console.error("Meta Pixel not available for testing");
     }
@@ -125,12 +145,19 @@ export const debugTracking = {
       console.log("Sending test event to trigger pixel request...");
       window.fbq("track", "TestEvent", {
         test: true,
-        test_event_code: "TEST72918",
+        ...(process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE
+          ? {
+              test_event_code:
+                process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE,
+            }
+          : {}),
       });
       console.log("Check Network tab for the request");
-      console.log(
-        "Check Facebook Event Manager for real-time events with test code TEST72918"
-      );
+      if (process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE) {
+        console.log(
+          `Check Facebook Event Manager for real-time events with test code ${process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE}`
+        );
+      }
     }
   },
 

@@ -21,6 +21,10 @@ NEXT_PUBLIC_BASE_URL=your_api_base_url
 # Meta Pixel Configuration
 # Get your Pixel ID from Facebook Business Manager > Events Manager > Data Sources > Pixels
 NEXT_PUBLIC_META_PIXEL_ID=your_meta_pixel_id
+# Optional test event code for Events Manager real-time view
+NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE=your_test_event_code
+# Explicitly toggle Meta Pixel test mode (defaults to on in non-production when a test code is set)
+NEXT_PUBLIC_META_PIXEL_ENABLE_TEST_MODE=false
 
 # TikTok Pixel Configuration
 # Get your Pixel ID from TikTok Ads Manager > Assets > Events > Web Events
@@ -164,9 +168,11 @@ trackingManager.trackBoth({
 
 ### Meta Pixel Verification
 
-1. Install [Facebook Pixel Helper](https://chrome.google.com/webstore/detail/facebook-pixel-helper/fdgfkebogiimcoedlicjlajpkdmockpc) Chrome extension
-2. Visit your website
-3. Check that events are firing correctly
+1. Install [Meta Pixel Helper](https://chrome.google.com/webstore/detail/facebook-pixel-helper/fdgfkebogiimcoedlicjlajpkdmockpc).
+2. Visit your website in a fresh browser session (no ad blockers) and interact with tracked features.
+3. Confirm the helper reports your pixel ID and the expected events (PageView, Lead, Purchase, etc.).
+4. To monitor real-time activity in Events Manager, set a `NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE` and turn on test mode. All queued events automatically enrich themselves with your test code until you disable test mode or remove the code.
+5. Before launching, update the `.env` so that `NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE` is empty (or unset) and `NEXT_PUBLIC_META_PIXEL_ENABLE_TEST_MODE` is `false`. Otherwise Facebook will classify production events as test traffic.
 
 ### TikTok Pixel Verification
 
@@ -178,9 +184,9 @@ trackingManager.trackBoth({
 
 Open browser console and look for:
 
-- "Meta Pixel initialized" (if Meta Pixel ID is provided)
-- "TikTok Pixel initialized" (if TikTok Pixel ID is provided)
-- Any tracking errors (in development mode)
+- `trackingManager` initialization logs or warnings about missing pixel IDs
+- No errors related to blocked scripts or missing `fbq` / `ttq`
+- Optional: run `debugTracking.runAllChecks()` in the console to emit a full suite of test events (includes the configured test event code automatically)
 
 ## Troubleshooting
 

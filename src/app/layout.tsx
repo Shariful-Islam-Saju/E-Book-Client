@@ -41,6 +41,7 @@ export default function RootLayout({
         {process.env.NEXT_PUBLIC_META_PIXEL_ID && (
           <>
             <script
+              id="meta-pixel-script"
               dangerouslySetInnerHTML={{
                 __html: `
                   !function(f,b,e,v,n,t,s)
@@ -52,7 +53,6 @@ export default function RootLayout({
                   s.parentNode.insertBefore(t,s)}(window, document,'script',
                   'https://connect.facebook.net/en_US/fbevents.js');
                   fbq('init', '${process.env.NEXT_PUBLIC_META_PIXEL_ID}');
-                  fbq('track', 'PageView', {test_event_code: 'TEST72918'});
                 `,
               }}
             />

@@ -59,15 +59,92 @@ export interface TikTokEvent extends TrackingEvent {
 }
 
 class TrackingManager {
-  private metaPixelId: string | null = null;
-  private tiktokPixelId: string | null = null;
-  private isInitialized = false;
-  private testEventCode: string = "TEST72918"; // Facebook test event code
+  private metaPixelId: string | null =
+    process.env.NEXT_PUBLIC_META_PIXEL_ID ?? null;
+  private tiktokPixelId: string | null =
+    process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID ?? null;
+  private isInitializing = false;
+  private testEventCode: string | null =
+    process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE ?? null;
+  private useMetaTestMode: boolean;
+  private metaEventQueue: MetaPixelEvent[] = [];
+  private tiktokEventQueue: TikTokEvent[] = [];
+  private metaReady = false;
+  private tiktokReady = false;
+  private metaRetryTimer: number | null = null;
+  private tiktokRetryTimer: number | null = null;
 
   constructor() {
-    if (typeof window !== "undefined") {
-      this.metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || null;
-      this.tiktokPixelId = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID || null;
+    const explicitTestMode =
+      process.env.NEXT_PUBLIC_META_PIXEL_ENABLE_TEST_MODE === "true";
+
+    this.useMetaTestMode =
+      explicitTestMode ||
+      (!explicitTestMode &&
+        process.env.NODE_ENV !== "production" &&
+        !!this.testEventCode);
+  }
+
+  private getMetaEventParameters(
+    parameters?: MetaPixelEvent["parameters"]
+  ): MetaPixelEvent["parameters"] | undefined {
+    const shouldAttachTestCode = this.useMetaTestMode && this.testEventCode;
+
+    if (!shouldAttachTestCode) {
+      return parameters;
+    }
+
+    return {
+      ...parameters,
+      test_event_code: this.testEventCode!,
+    };
+  }
+
+  private emitMetaPixelEvent(event: MetaPixelEvent): void {
+    if (typeof window === "undefined" || !window.fbq) {
+      return;
+    }
+
+    const parameters = this.getMetaEventParameters(event.parameters);
+
+    if (parameters && Object.keys(parameters).length > 0) {
+      window.fbq("track", event.event, parameters);
+    } else {
+      window.fbq("track", event.event);
+    }
+  }
+
+  private flushMetaEventQueue(): void {
+    if (typeof window === "undefined" || !window.fbq) {
+      return;
+    }
+
+    while (this.metaEventQueue.length > 0) {
+      const queuedEvent = this.metaEventQueue.shift();
+      if (queuedEvent) {
+        this.emitMetaPixelEvent(queuedEvent);
+      }
+    }
+  }
+
+  private emitTikTokEvent(event: TikTokEvent): void {
+    if (typeof window === "undefined" || !window.ttq) {
+      return;
+    }
+
+    window.ttq("track", event.event, event.parameters);
+  }
+
+  private flushTikTokEventQueue(): void {
+    if (typeof window === "undefined" || !window.ttq) {
+      return;
+    }
+
+    while (this.tiktokEventQueue.length > 0) {
+      const queuedEvent = this.tiktokEventQueue.shift();
+      if (queuedEvent) {
+        this.emitTikTokEvent(queuedEvent);
+      }
     }
   }
 
@@ -83,7 +160,6 @@ class TrackingManager {
       script.src = src;
       script.async = true;
       script.defer = true;
-      // Remove crossOrigin to avoid CORS issues with Meta Pixel
       script.onload = () => resolve();
       script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
 
@@ -91,84 +167,131 @@ class TrackingManager {
     });
   }
 
-  async initialize(): Promise<void> {
-    if (this.isInitialized || typeof window === "undefined") {
+  private async initMetaPixel(): Promise<void> {
+    if (!this.metaPixelId || this.metaReady) {
       return;
     }
 
+    if (!window.fbq) {
+      if (!this.metaRetryTimer) {
+        this.metaRetryTimer = window.setTimeout(() => {
+          this.metaRetryTimer = null;
+          void this.initMetaPixel();
+        }, 200);
+      }
+      return;
+    }
+
+    this.metaReady = true;
+    this.flushMetaEventQueue();
+  }
+
+  private async initTikTokPixel(): Promise<void> {
+    if (!this.tiktokPixelId || this.tiktokReady) {
+      return;
+    }
+
+    window.ttq =
+      window.ttq ||
+      function (...args: any[]) {
+        (window.ttq.q = window.ttq.q || []).push(args);
+      };
+
     try {
-      // Wait for Meta Pixel to be loaded from layout.tsx
-      if (this.metaPixelId) {
-        // Wait for fbq to be available (loaded from layout.tsx)
-        let attempts = 0;
-        const maxAttempts = 50; // 5 seconds max wait
+      await this.loadScript(
+        `https://analytics.tiktok.com/i18n/pixel/events.js`,
+        "tiktok-pixel-script"
+      );
 
-        while (!window.fbq && attempts < maxAttempts) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-          attempts++;
-        }
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-        if (window.fbq) {
-          console.log("Meta Pixel loaded successfully");
-        } else {
-          console.warn("Meta Pixel not loaded after waiting");
-        }
-      }
+      window.ttq("init", this.tiktokPixelId);
+      window.ttq("track", "ViewContent");
 
-      // Initialize TikTok Pixel if needed
-      if (this.tiktokPixelId) {
-        // Set up ttq function before loading script
-        window.ttq =
-          window.ttq ||
-          function (...args: any[]) {
-            (window.ttq.q = window.ttq.q || []).push(args);
-          };
-
-        // Load the script
-        await this.loadScript(
-          `https://analytics.tiktok.com/i18n/pixel/events.js`,
-          "tiktok-pixel-script"
-        );
-
-        // Wait a bit for script to fully load
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        // Initialize TikTok Pixel
-        window.ttq("init", this.tiktokPixelId);
-        window.ttq("track", "ViewContent");
-      }
-
-      this.isInitialized = true;
+      this.tiktokReady = true;
+      this.flushTikTokEventQueue();
     } catch (error) {
-      console.error("Failed to initialize tracking pixels:", error);
+      console.error("Failed to initialize TikTok pixel:", error);
+      this.tiktokReady = false;
+      if (!this.tiktokRetryTimer) {
+        this.tiktokRetryTimer = window.setTimeout(() => {
+          this.tiktokRetryTimer = null;
+          void this.initTikTokPixel();
+        }, 1000);
+      }
+      throw error;
+    }
+  }
+
+  async initialize(): Promise<void> {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (this.isInitializing) {
+      return;
+    }
+
+    this.isInitializing = true;
+
+    try {
+      await Promise.allSettled([this.initMetaPixel(), this.initTikTokPixel()]);
+    } catch (error) {
+      console.error("Tracking initialization failed:", error);
+    } finally {
+      this.isInitializing = false;
     }
   }
 
   trackMetaPixel(event: MetaPixelEvent): void {
-    if (!this.isInitialized || !window.fbq || !this.metaPixelId) {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (!this.metaPixelId) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(
+          `[tracking] Meta Pixel ID not configured. Skipping event "${event.event}".`
+        );
+      }
+      return;
+    }
+
+    if (!this.metaReady || !window.fbq) {
+      this.metaEventQueue.push(event);
+      void this.initialize();
       return;
     }
 
     try {
-      // Add test event code to all events for real-time testing
-      const parametersWithTestCode = {
-        ...event.parameters,
-        test_event_code: this.testEventCode,
-      };
-
-      window.fbq("track", event.event, parametersWithTestCode);
+      this.emitMetaPixelEvent(event);
     } catch (error) {
       console.error("Failed to track Meta Pixel event:", error);
     }
   }
 
   trackTikTok(event: TikTokEvent): void {
-    if (!this.isInitialized || !window.ttq || !this.tiktokPixelId) {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (!this.tiktokPixelId) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(
+          `[tracking] TikTok Pixel ID not configured. Skipping event "${event.event}".`
+        );
+      }
+      return;
+    }
+
+    if (!this.tiktokReady || !window.ttq) {
+      this.tiktokEventQueue.push(event);
+      void this.initialize();
       return;
     }
 
     try {
-      window.ttq("track", event.event, event.parameters);
+      this.emitTikTokEvent(event);
     } catch (error) {
       console.error("Failed to track TikTok event:", error);
     }
@@ -181,7 +304,10 @@ class TrackingManager {
 
   // Convenience methods for common events
   trackPageView(pageName?: string): void {
-    // PageView is already tracked in layout.tsx, so we only track additional page views
+    this.trackMetaPixel({
+      event: "PageView",
+      parameters: pageName ? { content_name: pageName } : undefined,
+    });
     // Track ViewContent for TikTok
     this.trackTikTok({
       event: "ViewContent",
