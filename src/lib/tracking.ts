@@ -108,12 +108,23 @@ class TrackingManager {
     const parameters = this.getMetaEventParameters(event.parameters);
 
     console.log("Emitting Meta Pixel event:", event.event, parameters);
+    console.log("Current domain:", window.location.hostname);
+    console.log("User agent:", navigator.userAgent);
 
     if (parameters && Object.keys(parameters).length > 0) {
       window.fbq("track", event.event, parameters);
     } else {
       window.fbq("track", event.event);
     }
+
+    // Force immediate network request verification
+    setTimeout(() => {
+      console.log("Checking if pixel request was sent...");
+      const pixelRequests = performance.getEntriesByName(
+        "https://www.facebook.com/tr"
+      );
+      console.log("Pixel network requests:", pixelRequests.length);
+    }, 1000);
   }
 
   private flushMetaEventQueue(): void {

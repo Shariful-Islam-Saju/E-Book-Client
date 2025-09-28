@@ -52,7 +52,7 @@ export const debugTracking = {
   testMetaPixel: () => {
     if (window.fbq) {
       console.log("Testing Meta Pixel...");
-      window.fbq("track", "TestEvent", {
+      window.fbq("trackCustom", "DebugTest", {
         content_name: "Debug Test",
         test: true,
         ...(process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE
