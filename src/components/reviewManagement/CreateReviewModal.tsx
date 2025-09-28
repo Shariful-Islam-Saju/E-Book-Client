@@ -16,7 +16,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCreateReviewMutation } from "@/redux/features/review/reviewApi";
+import { useGetAllFilesQuery } from "@/redux/features/file/fileApi";
 
 interface FormValues {
   title: string;
@@ -25,6 +33,7 @@ interface FormValues {
   reviewBy: string;
   mobile?: string;
   profileImg?: FileList;
+  ebookId?: string;
 }
 
 interface Props {
@@ -36,7 +45,13 @@ interface Props {
 const CreateReviewModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
+
   const [createReview] = useCreateReviewMutation();
+  const {
+    data: files,
+    isLoading: filesLoading,
+    isError,
+  } = useGetAllFilesQuery();
 
   const { register, handleSubmit, setValue, watch, reset } =
     useForm<FormValues>({
@@ -55,8 +70,11 @@ const CreateReviewModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     try {
       setLoading(true);
       const formData = new FormData();
-      if (data.profileImg?.[0])
+
+      if (data.profileImg?.[0]) {
         formData.append("profileImg", data.profileImg[0]);
+      }
+
       formData.append(
         "data",
         JSON.stringify({
@@ -65,6 +83,7 @@ const CreateReviewModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
           rating: data.rating,
           reviewBy: data.reviewBy,
           mobile: data.mobile,
+          ebookId: data.ebookId,
         })
       );
 
@@ -92,7 +111,7 @@ const CreateReviewModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.25 }}
-              className="p-6"
+              className="p-6 w-md"
             >
               <DialogHeader>
                 <DialogTitle className="text-xl font-semibold">
@@ -113,7 +132,10 @@ const CreateReviewModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                 {/* Description */}
                 <div className="space-y-1">
                   <Label>Description</Label>
-                  <Textarea {...register("description", { required: true })} />
+                  <Textarea
+                    {...register("description", { required: true })}
+                    className="min-h-[120px] max-h-[200px] overflow-y-auto resize-none"
+                  />
                 </div>
 
                 {/* Reviewer Name */}
@@ -124,7 +146,7 @@ const CreateReviewModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
                 {/* Mobile */}
                 <div className="space-y-1">
-                  <Label>Mobile (Optional)</Label>
+                  <Label>Mobile</Label>
                   <Input {...register("mobile")} />
                 </div>
 
@@ -144,6 +166,31 @@ const CreateReviewModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                       />
                     ))}
                   </div>
+                </div>
+
+                {/* Select Book */}
+                <div className="space-y-1">
+                  <Label>Select Book</Label>
+                  <Select onValueChange={(val) => setValue("ebookId", val)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a book" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filesLoading && (
+                        <p className="p-2 text-sm">Loading...</p>
+                      )}
+                      {isError && (
+                        <p className="p-2 text-sm text-red-500">
+                          Failed to load files
+                        </p>
+                      )}
+                      {files?.data?.map((file: { id: string; title: string }) => (
+                        <SelectItem key={file.id} value={file.id}>
+                          {file.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Profile Image */}

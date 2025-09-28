@@ -69,9 +69,9 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ reviews }) => {
                   >
                     {/* Review Content */}
                     <TableCell className="align-top">
-                      <div className="flex flex-col space-y-1 w-full">
+                      <div className="min-w-[150px] max-w-[550px]">
                         {/* Stars */}
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 mb-1">
                           {Array.from({ length: 5 }, (_, i) => (
                             <Star
                               key={i}
@@ -84,17 +84,17 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ reviews }) => {
                           ))}
                         </div>
 
-                        {/* Review Title */}
+                        {/* Title */}
                         <p className="font-medium text-gray-900">
                           {review.title}
                         </p>
 
-                        {/* Review Description */}
-                        <p className="text-sm text-gray-500 break-words whitespace-pre-wrap w-full">
+                        {/* Description */}
+                        <p className="text-sm text-gray-500 break-words whitespace-pre-wrap">
                           {review.description || "No description"}
                         </p>
 
-                        {/* EBook Reference */}
+                        {/* Ebook */}
                         {review.ebook && (
                           <p className="text-xs text-blue-600 break-words whitespace-pre-wrap">
                             EBook: {review.ebook.title}

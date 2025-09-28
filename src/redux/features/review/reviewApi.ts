@@ -7,7 +7,7 @@ export const reviewApi = baseApi.injectEndpoints({
       queryFn: async (data, _queryApi, _extraOptions, fetchWithBQ) => {
         try {
           const response = await fetchWithBQ({
-            url: `/review`,
+            url: `/review/create`,
             method: "POST",
             body: data,
           });
