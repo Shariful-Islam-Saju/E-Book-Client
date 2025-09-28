@@ -53,7 +53,11 @@ export default function RootLayout({
                   s.parentNode.insertBefore(t,s)}(window, document,'script',
                   'https://connect.facebook.net/en_US/fbevents.js');
                   fbq('init', '${process.env.NEXT_PUBLIC_META_PIXEL_ID}');
-                  fbq('track', 'PageView');
+                  ${
+                    process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE
+                      ? `fbq('track', 'PageView', {test_event_code: '${process.env.NEXT_PUBLIC_META_PIXEL_TEST_EVENT_CODE}'});`
+                      : `fbq('track', 'PageView');`
+                  }
                 `,
               }}
             />
