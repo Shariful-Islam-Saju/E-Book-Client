@@ -20,9 +20,8 @@ const baseQueryWithRefreshToken = async (
   extraOptions: any
 ) => {
   let result = await rawBaseQuery(args, api, extraOptions);
-
   // If token expired
-  if (result.error?.status === 401) {
+  if (result.error?.status === 500 || result.error?.status === 401) {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/auth/refresh-token`,
@@ -31,6 +30,7 @@ const baseQueryWithRefreshToken = async (
           credentials: "include",
         }
       );
+
       const data = await res.json();
 
       if (data?.data?.accessToken) {
@@ -45,7 +45,7 @@ const baseQueryWithRefreshToken = async (
         api.dispatch(logout());
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       api.dispatch(logout());
     }
   }
