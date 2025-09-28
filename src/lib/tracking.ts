@@ -124,7 +124,33 @@ class TrackingManager {
         "https://www.facebook.com/tr"
       );
       console.log("Pixel network requests:", pixelRequests.length);
-    }, 1000);
+
+      // Check for blocked requests
+      const allRequests = performance
+        .getEntries()
+        .filter(
+          (entry) =>
+            entry.name.includes("facebook.com") ||
+            entry.name.includes("connect.facebook.net")
+        );
+      console.log("All Facebook requests:", allRequests);
+
+      // Check fbq queue
+      console.log(
+        "fbq queue length:",
+        window.fbq.q ? window.fbq.q.length : "No queue"
+      );
+      console.log("fbq loaded:", window.fbq.loaded);
+
+      // Manual network test
+      fetch(
+        "https://www.facebook.com/tr?id=" +
+          process.env.NEXT_PUBLIC_META_PIXEL_ID +
+          "&ev=PageView&noscript=1"
+      )
+        .then(() => console.log("Manual Facebook request: SUCCESS"))
+        .catch((err) => console.error("Manual Facebook request: FAILED", err));
+    }, 2000);
   }
 
   private flushMetaEventQueue(): void {
