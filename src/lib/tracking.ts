@@ -107,6 +107,8 @@ class TrackingManager {
 
     const parameters = this.getMetaEventParameters(event.parameters);
 
+    console.log("Emitting Meta Pixel event:", event.event, parameters);
+
     if (parameters && Object.keys(parameters).length > 0) {
       window.fbq("track", event.event, parameters);
     } else {
@@ -183,6 +185,7 @@ class TrackingManager {
     }
 
     this.metaReady = true;
+    console.log("Meta Pixel ready, flushing queue...");
     this.flushMetaEventQueue();
   }
 
