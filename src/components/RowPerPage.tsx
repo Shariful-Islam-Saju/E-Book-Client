@@ -13,7 +13,7 @@ const RowsPerPage: React.FC<RowsPerPageProps> = ({
   limit,
   setLimit,
   setPage,
-  limitOptions = [1, 50, 100, 200, 500],
+  limitOptions = [ 50, 100, 200, 500,1000],
 }) => {
   return (
     <div className="flex flex-col min-w-[120px] flex-1">

@@ -4,25 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import React, { useEffect, useRef } from "react";
 import { Hind_Siliguri } from "next/font/google";
+import { TReview } from "@/types";
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ["latin", "bengali"],
   weight: ["400", "500", "700"],
 });
 
-type Review = {
-  title: string;
-  rating: number;
-  description: string;
-  reviewBy: string;
-  mobile?: string;
-};
-
 type ReviewsProps = {
-  reviews: Review[];
+  reviews: TReview[];
 };
 
-const Reviews: React.FC<ReviewsProps> = ({ reviews }) => {
+const Reviews = ({ reviews }: ReviewsProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const maskPhone = (phone: string) => {
@@ -129,19 +122,35 @@ const Reviews: React.FC<ReviewsProps> = ({ reviews }) => {
               </div>
 
               {/* Review info sticks to bottom */}
-              <div className="mt-4 pt-3 border-t border-slate-100">
-                <p
-                  className={`${hindSiliguri.className} text-sm font-medium text-slate-800`}
-                >
-                  {review.reviewBy}
-                </p>
-                {review.mobile && (
+              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-3">
+                {/* Reviewer Avatar */}
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-slate-200 text-slate-800 font-medium text-sm overflow-hidden">
+                  {review.profileImg ? (
+                    <img
+                      src={review.profileImg}
+                      alt={review.reviewBy}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span>{review.reviewBy.charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
+
+                {/* Reviewer Info */}
+                <div>
                   <p
-                    className={`${hindSiliguri.className} text-xs text-slate-500`}
+                    className={`${hindSiliguri.className} text-sm font-medium text-slate-800`}
                   >
-                    {maskPhone(review.mobile)}
+                    {review.reviewBy}
                   </p>
-                )}
+                  {review.mobile && (
+                    <p
+                      className={`${hindSiliguri.className} text-xs text-slate-500`}
+                    >
+                      {maskPhone(review.mobile)}
+                    </p>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>

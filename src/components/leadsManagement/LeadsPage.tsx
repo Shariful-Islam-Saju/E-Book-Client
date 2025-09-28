@@ -17,7 +17,7 @@ import Pagination from "../Pagination";
 
 const LeadsPage: React.FC = () => {
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(50);
+  const [limit, setLimit] = useState(1000);
 
   // Inputs for UI (no default values)
   const [fromDate, setFromDate] = useState("");

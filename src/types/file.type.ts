@@ -8,7 +8,7 @@ export interface TEBook {
   reviews: TReview[];
   imgUrl?: string;
   discount: number;
-  bookPrice: number
+  bookPrice: number;
 }
 
 export interface TReview {
@@ -18,4 +18,7 @@ export interface TReview {
   title: string;
   reviewBy: string;
   mobile: string;
+  profileImg: string;
+  FacebookImg: string;
+  ebook:TEBook
 }

@@ -1,53 +1,82 @@
 import baseApi from "@/redux/api/baseApi";
+import { TRes, TReview } from "@/types";
 
-const reviewApi = baseApi.injectEndpoints({
+export const reviewApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // ✅ Get all reviews
-    getAllReviews: builder.query({
-      query: () => ({
-        url: "/review",
-        method: "GET",
-      }),
-      providesTags: ["Review"],
+    createReview: builder.mutation<TRes<TReview>, FormData>({
+      queryFn: async (data, _queryApi, _extraOptions, fetchWithBQ) => {
+        try {
+          const response = await fetchWithBQ({
+            url: `/review`,
+            method: "POST",
+            body: data,
+          });
+          if ("error" in response) return { error: response.error };
+          return { data: response.data as TRes<TReview> };
+        } catch (err) {
+          return { error: err as any };
+        }
+      },
+      invalidatesTags: [{ type: "Review", id: "LIST" }],
     }),
 
-    // ✅ Create a review
-    createReview: builder.mutation({
-      query: (newReview) => ({
-        url: "/review",
-        method: "POST",
-        body: newReview,
-      }),
-      invalidatesTags: ["Review"],
+    getAllReviews: builder.query<TRes<TReview[]>, void>({
+      query: () => ({ url: `/review`, method: "GET" }),
+      providesTags: (result) =>
+        result?.data
+          ? [
+              ...result.data.map((review) => ({
+                type: "Review" as const,
+                id: review.id,
+              })),
+              { type: "Review", id: "LIST" },
+            ]
+          : [{ type: "Review", id: "LIST" }],
+      keepUnusedDataFor: 600,
     }),
 
-    // ✅ Update/Modify a review
-    updateReview: builder.mutation({
-      query: ({ id, ...updatedData }) => ({
-        url: `/review/${id}`,
-        method: "PUT", // or PATCH if partial update
-        body: updatedData,
-      }),
-      invalidatesTags: ["Review"],
+    getReviewById: builder.query<TRes<TReview>, string>({
+      query: (id: string) => ({ url: `/review/${id}`, method: "GET" }),
+      providesTags: (_result, _error, id) => [{ type: "Review", id }],
     }),
 
-    // ✅ Delete a review
-    deleteReview: builder.mutation({
-      query: (id) => ({
-        url: `/review/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Review"],
+    updateReview: builder.mutation<
+      TRes<TReview>,
+      { id: string; data: FormData }
+    >({
+      queryFn: async ({ id, data }, _queryApi, _extraOptions, fetchWithBQ) => {
+        try {
+          const response = await fetchWithBQ({
+            url: `/review/${id}`,
+            method: "PATCH",
+            body: data,
+          });
+          if ("error" in response) return { error: response.error };
+          return { data: response.data as TRes<TReview> };
+        } catch (err) {
+          return { error: err as any };
+        }
+      },
+      invalidatesTags: (result, _error, { id }) => [
+        { type: "Review", id },
+        { type: "Review", id: "LIST" },
+      ],
+    }),
+
+    deleteReview: builder.mutation<TRes<{ message: string }>, string>({
+      query: (id: string) => ({ url: `/review/${id}`, method: "DELETE" }),
+      invalidatesTags: (result, _error, id) => [
+        { type: "Review", id },
+        { type: "Review", id: "LIST" },
+      ],
     }),
   }),
 });
 
-// Export hooks
 export const {
-  useGetAllReviewsQuery,
   useCreateReviewMutation,
+  useGetAllReviewsQuery,
+  useGetReviewByIdQuery,
   useUpdateReviewMutation,
   useDeleteReviewMutation,
 } = reviewApi;
-
-export default reviewApi;
