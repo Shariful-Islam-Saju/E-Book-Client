@@ -120,36 +120,45 @@ class TrackingManager {
     // Force immediate network request verification
     setTimeout(() => {
       console.log("Checking if pixel request was sent...");
-      const pixelRequests = performance.getEntriesByName(
-        "https://www.facebook.com/tr"
-      );
-      console.log("Pixel network requests:", pixelRequests.length);
 
-      // Check for blocked requests
-      const allRequests = performance
+      // Check for actual tracking requests (the correct way)
+      const trackingRequests = performance
+        .getEntries()
+        .filter((entry) => entry.name.includes("facebook.com/tr"));
+      console.log("Facebook tracking requests:", trackingRequests.length);
+
+      // Log the actual tracking URLs
+      trackingRequests.forEach((req, i) => {
+        console.log(`Tracking Request ${i + 1}:`, req.name);
+      });
+
+      // Check all Facebook requests
+      const allFBRequests = performance
         .getEntries()
         .filter(
           (entry) =>
             entry.name.includes("facebook.com") ||
             entry.name.includes("connect.facebook.net")
         );
-      console.log("All Facebook requests:", allRequests);
+      console.log("Total Facebook requests:", allFBRequests.length);
 
-      // Check fbq queue
+      // Check fbq status
       console.log(
         "fbq queue length:",
         window.fbq.q ? window.fbq.q.length : "No queue"
       );
       console.log("fbq loaded:", window.fbq.loaded);
 
-      // Manual network test
-      fetch(
-        "https://www.facebook.com/tr?id=" +
-          process.env.NEXT_PUBLIC_META_PIXEL_ID +
-          "&ev=PageView&noscript=1"
-      )
-        .then(() => console.log("Manual Facebook request: SUCCESS"))
-        .catch((err) => console.error("Manual Facebook request: FAILED", err));
+      // The key insight: if we see tracking requests, the pixel IS working
+      if (trackingRequests.length > 0) {
+        console.log("✅ PIXEL IS WORKING! Events are being sent to Facebook.");
+        console.log("If Test Events aren't showing, check:");
+        console.log("1. Test code case sensitivity in Facebook Events Manager");
+        console.log("2. Domain configuration in Business Manager");
+        console.log("3. Wait 1-2 minutes for events to appear");
+      } else {
+        console.log("❌ No tracking requests found");
+      }
     }, 2000);
   }
 
