@@ -222,7 +222,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
           variants={inputVariants}
         >
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            ঠিকানা (ঐচ্ছিক)
+            ঠিকানা 
           </label>
           <Textarea
             placeholder="আপনার ঠিকানা লিখুন"
