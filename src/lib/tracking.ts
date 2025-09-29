@@ -406,14 +406,29 @@ class TrackingManager {
     value?: number,
     currency: string = "BDT"
   ): void {
+    // Ensure currency is valid ISO 4217 code
+    const validCurrency =
+      currency && currency.length === 3 ? currency.toUpperCase() : "USD";
+
     this.trackBoth({
       event: "Purchase",
       parameters: {
         content_name: ebookTitle,
         content_category: "Ebook",
+        content_type: "product",
         content_ids: [ebookId],
         value: value || 0,
-        currency: currency,
+        currency: validCurrency,
+        contents: value
+          ? [
+              {
+                id: ebookId,
+                quantity: 1,
+                item_price: value,
+              },
+            ]
+          : undefined,
+        delivery_category: "digital_download",
       },
     });
   }

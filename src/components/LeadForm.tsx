@@ -49,7 +49,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
 }) => {
   const [createLead, { isLoading }] = useCreateLeadMutation();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { trackLead, trackEbookDownload } = useTracking();
+  const { trackLead } = useTracking();
   const router = useRouter();
 
   const {
@@ -127,15 +127,16 @@ const LeadForm: React.FC<LeadFormProps> = ({
               link.click();
               document.body.removeChild(link);
 
-              // Track successful download as Purchase event
-              trackEbookDownload(
-                ebookTitle || "Ebook",
-                ebookId,
-                ebookPrice || 0,
-                currency
-              );
+              // Pass ebook data to thank-you page via URL parameters
+              const ebookData = {
+                id: ebookId,
+                title: ebookTitle || "Ebook",
+                price: (ebookPrice || 0).toString(),
+                currency: currency,
+              };
 
-              router.push("/thank-you");
+              const params = new URLSearchParams(ebookData);
+              router.push(`/thank-you?${params.toString()}`);
               return "ডাউনলোড সফলভাবে সম্পন্ন হয়েছে";
             } else {
               toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
