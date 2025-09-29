@@ -166,7 +166,7 @@ const LeadsPage: React.FC = () => {
       {/* Table */}
       <div className="mx-auto min-w-[1500px] px-6 pb-12 mt-24">
         {isLoading ? (
-          <LeadLoading viewMode="grid" />
+          <LeadLoading  rows={20} />
         ) : leads.length === 0 ? (
           <LeadsNotFound search={search} setSearch={setSearch} />
         ) : (

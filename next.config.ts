@@ -28,6 +28,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/", // match root
+        destination: "/ebooks", // send to /ebooks
+        permanent: true, // 308 redirect (SEO friendly)
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

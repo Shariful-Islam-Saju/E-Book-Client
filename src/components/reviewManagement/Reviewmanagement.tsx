@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { useGetAllReviewsQuery } from "@/redux/features/review/reviewApi";
-import { Loader2, Plus } from "lucide-react";
+import {  Plus } from "lucide-react";
 import { toast } from "sonner";
 import ReviewTable from "./ReviewTable";
 import CreateReviewModal from "./CreateReviewModal";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import LeadLoading from "../leadsManagement/LeadLoading";
 
 const ReviewLibraryPage = () => {
   const [search, setSearch] = useState("");
@@ -52,7 +53,7 @@ const ReviewLibraryPage = () => {
           />
           <Button
             onClick={() => setIsCreateOpen(true)}
-            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
           >
             <Plus className="w-5 h-5" /> Add Review
           </Button>
@@ -61,21 +62,19 @@ const ReviewLibraryPage = () => {
 
       {/* Loading */}
       {isLoading && (
-        <div className="flex justify-center py-20">
-          <Loader2 className="animate-spin w-8 h-8 text-green-600" />
-        </div>
+      <LeadLoading />
       )}
 
       {/* Error */}
       {!isLoading && error && (
         <div className="flex flex-col items-center py-20 text-red-600">
           <p className="mb-2">Failed to load reviews.</p>
-          <button
+          <Button
             onClick={refetch}
             className="px-4 py-2 border rounded text-green-600 hover:bg-green-50"
           >
             Retry
-          </button>
+          </Button>
         </div>
       )}
 

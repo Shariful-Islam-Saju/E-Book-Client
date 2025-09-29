@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { useGetAllFilesQuery } from "@/redux/features/file/fileApi";
-import { Loader2, Plus } from "lucide-react";
+import {  Plus } from "lucide-react";
 import { toast } from "sonner";
 import EBookTable from "./EBookTable";
 import CreateEBookModal from "./CreateEBookModal";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import LeadLoading from "../leadsManagement/LeadLoading";
 
 const EBookLibraryPage = () => {
   const [search, setSearch] = useState("");
@@ -58,9 +59,7 @@ const EBookLibraryPage = () => {
 
       {/* Loading */}
       {isLoading && (
-        <div className="flex justify-center py-20">
-          <Loader2 className="animate-spin w-8 h-8 text-blue-600" />
-        </div>
+      <LeadLoading />
       )}
 
       {/* Error */}

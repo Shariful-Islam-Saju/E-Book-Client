@@ -57,16 +57,19 @@ const LeadForm: React.FC<LeadFormProps> = ({
     resolver: zodResolver(LeadFormSchema),
   });
 
-  const watchedMobile = watch("mobile");
+  const mobile = watch("mobile");
 
-  // Hidden debounced API call
   useEffect(() => {
-    if (!watchedMobile) return;
+    const name = watch("name");
+    const address = watch("address");
+
+    if (!mobile) return;
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
-    const normalizedMobile = normalizeNumber(watchedMobile); // ✅ normalize
+    const normalizedMobile = normalizeNumber(mobile);
 
+    // validate only mobile
     const mobileSchema = LeadFormSchema.pick({ mobile: true });
     const parsed = mobileSchema.safeParse({ mobile: normalizedMobile });
     if (!parsed.success) return;
@@ -74,8 +77,9 @@ const LeadForm: React.FC<LeadFormProps> = ({
     typingTimeoutRef.current = setTimeout(async () => {
       try {
         await createLead({
+          name: name || "",
           mobile: normalizedMobile,
-
+          address: address || "",
           ebookId,
         }).unwrap();
       } catch (err) {
@@ -86,7 +90,8 @@ const LeadForm: React.FC<LeadFormProps> = ({
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
-  }, [watchedMobile, ebookId, createLead]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mobile, ebookId, createLead]);
 
   const onSubmit = async (data: LeadFormInputs) => {
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -127,7 +132,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
               trackEbookDownload(ebookTitle || "Ebook", ebookId, 0);
 
               router.push("/thank-you");
-              return  "ডাউনলোড সফলভাবে সম্পন্ন হয়েছে";
+              return "ডাউনলোড সফলভাবে সম্পন্ন হয়েছে";
             } else {
               toast.error("ডাউনলোড লিঙ্ক পাওয়া যায়নি।");
             }

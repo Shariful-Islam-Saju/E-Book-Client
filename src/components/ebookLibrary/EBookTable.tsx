@@ -80,7 +80,7 @@ const EBookTable: React.FC<EBookTableProps> = ({ ebooks }) => {
                       className="border-b hover:bg-gray-50/50 transition-colors"
                     >
                       <TableCell>
-                        <div className="flex items-center space-x-4">
+                        <Link href={`/ebooks/${ebook.slug}`} className="flex items-center space-x-4">
                           <div className="w-12 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-100 overflow-hidden flex-shrink-0">
                             {ebook.imgUrl ? (
                               <Image
@@ -104,7 +104,7 @@ const EBookTable: React.FC<EBookTableProps> = ({ ebooks }) => {
                               {ebook.description || "No description"}
                             </p>
                           </div>
-                        </div>
+                        </Link>
                       </TableCell>
 
                       <TableCell className="text-center">
@@ -125,7 +125,7 @@ const EBookTable: React.FC<EBookTableProps> = ({ ebooks }) => {
                           <div className="flex justify-center space-x-2">
                             <Link href={ebook.url} className="h-8">
                               <Download className="w-4 h-4 mr-1" />
-                              
+
                             </Link>
                           </div>
                         ) : (
