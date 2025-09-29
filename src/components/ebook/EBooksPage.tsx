@@ -204,6 +204,8 @@ const EBooksPage: React.FC = () => {
               ebookId={file.id}
               downloadUrl={file.url}
               ebookTitle={file.title}
+              // ebookPrice={file.bookPrice - file.discount}
+              // currency="BDT"
             />
           </div>
           <div className="lg:w-1/3 bg-white p-8">

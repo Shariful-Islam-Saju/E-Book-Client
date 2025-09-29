@@ -26,6 +26,8 @@ interface LeadFormProps {
   ebookId: string;
   downloadUrl?: string;
   ebookTitle?: string;
+  // ebookPrice: number;
+  // currency: string;
 }
 
 // ✅ Convert Bangla digits to English digits
@@ -42,6 +44,8 @@ const LeadForm: React.FC<LeadFormProps> = ({
   ebookId,
   downloadUrl,
   ebookTitle,
+  // ebookPrice,
+  // currency,
 }) => {
   const [createLead, { isLoading }] = useCreateLeadMutation();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);

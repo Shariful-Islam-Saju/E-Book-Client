@@ -1,10 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import RandomBox from "./RandomBox";
 import { Hind_Siliguri } from "next/font/google";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useTracking } from "./TrackingProvider";
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ["latin"],
@@ -12,6 +14,25 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 const ThankYou = () => {
+  const searchParams = useSearchParams();
+  const { trackEbookDownload } = useTracking();
+
+  // Extract ebook data from URL parameters
+  const ebookId = searchParams.get("id");
+  const ebookTitle = searchParams.get("title");
+  const ebookPrice = searchParams.get("price");
+  const currency = searchParams.get("currency") || "BDT";
+  console.log(ebookId, ebookTitle, ebookPrice, currency);
+  // Track purchase event when component mounts
+  useEffect(() => {
+    if (ebookId && ebookTitle && ebookPrice) {
+      const price = parseFloat(ebookPrice);
+      if (!isNaN(price)) {
+        trackEbookDownload(ebookTitle, ebookId, price, currency);
+      }
+    }
+  }, [ebookId, ebookTitle, ebookPrice, currency, trackEbookDownload]);
+
   return (
     <div
       className={`${hindSiliguri.className} relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4`}
@@ -112,7 +133,9 @@ const ThankYou = () => {
             transition={{ delay: 0.5, duration: 0.5 }}
             className="text-xl md:text-2xl font-semibold mb-6 text-emerald-700"
           >
-            আপনার স্বাস্থ্য গাইডবুক সফলভাবে ডাউনলোড হয়েছে
+            {ebookTitle
+              ? `"${ebookTitle}" সফলভাবে ডাউনলোড হয়েছে`
+              : "আপনার ইবুক সফলভাবে ডাউনলোড হয়েছে"}
           </motion.p>
 
           {/* Message */}
@@ -184,14 +207,15 @@ const ThankYou = () => {
 
       {/* Footer */}
       <div className="absolute bottom-4 left-0 w-full text-center text-sm text-green-700/70 z-10">
- <motion.div
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
           className="mt-12 text-center text-gray-600"
         >
           <p>© {new Date().getFullYear()} Digital Seba. All rights reserved.</p>
-        </motion.div>      </div>
+        </motion.div>{" "}
+      </div>
 
       {/* Add the floating animation style */}
       <style jsx>{`

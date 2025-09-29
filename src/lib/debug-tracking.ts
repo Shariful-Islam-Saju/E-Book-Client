@@ -126,6 +126,24 @@ export const debugTracking = {
     }
   },
 
+  // Test Purchase event (for download tracking)
+  testPurchase: () => {
+    if (window.fbq) {
+      console.log("Testing Purchase event for ebook download...");
+      window.fbq("track", "Purchase", {
+        content_name: "Test EBook Download",
+        content_category: "Ebook",
+        content_ids: ["TEST-001"],
+        value: 1200, // Example price in BDT
+        currency: "BDT",
+        test_event_code: "TEST72918",
+      });
+      console.log("Purchase test event sent for ebook download with test code");
+    } else {
+      console.error("Meta Pixel not available for testing");
+    }
+  },
+
   // Verify pixel is working by checking network requests
   verifyPixelRequests: () => {
     console.log("=== PIXEL VERIFICATION ===");
@@ -168,6 +186,7 @@ export const debugTracking = {
     debugTracking.testMetaPixel();
     debugTracking.testTikTokPixel();
     debugTracking.testViewContent();
+    debugTracking.testPurchase();
     debugTracking.verifyPixelRequests();
   },
 };
