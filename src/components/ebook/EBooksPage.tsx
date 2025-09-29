@@ -14,6 +14,7 @@ import RandomBox from "../RandomBox";
 import { Hind_Siliguri } from "next/font/google";
 import { useTracking } from "@/components/TrackingProvider";
 import Image from "next/image";
+import { ArrowDown } from "lucide-react";
 
 const hindSiliguri = Hind_Siliguri({
   subsets: ["latin", "bengali"],
@@ -88,22 +89,12 @@ const EBooksPage: React.FC = () => {
   };
 
   // Replace your button onClick handlers with this
-  // const handleDownloadClick = () => {
-  //   if (!showForm) {
-  //     setShowForm(true);
-  //     setTimeout(() => {
-  //       const el = document.querySelector("#lead-form");
-  //       if (el) {
-  //         el.scrollIntoView({ behavior: "smooth", block: "center" });
-  //       }
-  //     }, 100); // wait for DOM update
-  //   } else {
-  //     const el = document.querySelector("#lead-form");
-  //     if (el) {
-  //       el.scrollIntoView({ behavior: "smooth", block: "center" });
-  //     }
-  //   }
-  // };
+  const handleDownloadClick = () => {
+    const el = document.querySelector("#lead-form");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
 
   return (
     <div
@@ -176,7 +167,7 @@ const EBooksPage: React.FC = () => {
               </div>
 
               {/* Button */}
-              {/* <div className="flex justify-center lg:justify-start">
+              <div className="flex justify-center lg:justify-start">
                 <button
                   onClick={handleDownloadClick}
                   className="relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-md px-4 py-2 bg-[rgb(37,177,112)] text-white transition-all"
@@ -185,7 +176,7 @@ const EBooksPage: React.FC = () => {
                     ডাউনলোড করুন <ArrowDown className="h-4 w-4" />
                   </span>
                 </button>
-              </div> */}
+              </div>
             </motion.div>
           </div>
         </div>
