@@ -115,15 +115,6 @@ const LeadForm: React.FC<LeadFormProps> = ({
           trackLead(ebookTitle || "Ebook Download Form");
           if (res?.data?.id) {
             if (downloadUrl) {
-              // const link = document.createElement("a");
-              // link.href = downloadUrl;
-              // link.target = "_blank";
-              // link.rel = "noopener noreferrer";
-              // link.download = ebookTitle || "ebook.pdf"; // optional filename
-              // document.body.appendChild(link);
-              // link.click();
-              // document.body.removeChild(link);
-
               const link = document.createElement("a");
               link.href = downloadUrl;
               link.download = ebookTitle || "Health_book"; // Set the filename directly

@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  ReactNode,
+  useMemo,
+  useCallback,
+} from "react";
 import { trackingManager } from "@/lib/tracking";
 import "@/lib/debug-tracking"; // Import debug utility
 
@@ -36,25 +43,59 @@ export function TrackingProvider({ children }: TrackingProviderProps) {
     trackingManager.initialize();
   }, []);
 
-  const contextValue: TrackingContextType = {
-    trackPageView: (pageName?: string) =>
-      trackingManager.trackPageView(pageName),
-    trackLead: (formName?: string) => trackingManager.trackLead(formName),
-    trackEbookView: (
+  // Memoize tracking functions to ensure stable references
+  const trackPageView = useCallback((pageName?: string) => {
+    trackingManager.trackPageView(pageName);
+  }, []);
+
+  const trackLead = useCallback((formName?: string) => {
+    trackingManager.trackLead(formName);
+  }, []);
+
+  const trackEbookView = useCallback(
+    (
       ebookTitle: string,
       ebookId: string,
       price?: number,
       currency?: string
-    ) => trackingManager.trackEbookView(ebookTitle, ebookId, price, currency),
-    trackEbookDownload: (
+    ) => {
+      trackingManager.trackEbookView(ebookTitle, ebookId, price, currency);
+    },
+    []
+  );
+
+  const trackEbookDownload = useCallback(
+    (
       ebookTitle: string,
       ebookId: string,
       value?: number,
       currency?: string
-    ) =>
-      trackingManager.trackEbookDownload(ebookTitle, ebookId, value, currency),
-    trackRegistration: () => trackingManager.trackRegistration(),
-  };
+    ) => {
+      trackingManager.trackEbookDownload(ebookTitle, ebookId, value, currency);
+    },
+    []
+  );
+
+  const trackRegistration = useCallback(() => {
+    trackingManager.trackRegistration();
+  }, []);
+
+  const contextValue: TrackingContextType = useMemo(
+    () => ({
+      trackPageView,
+      trackLead,
+      trackEbookView,
+      trackEbookDownload,
+      trackRegistration,
+    }),
+    [
+      trackPageView,
+      trackLead,
+      trackEbookView,
+      trackEbookDownload,
+      trackRegistration,
+    ]
+  );
 
   return (
     <TrackingContext.Provider value={contextValue}>

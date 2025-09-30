@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import RandomBox from "./RandomBox";
 import { Hind_Siliguri } from "next/font/google";
@@ -16,22 +16,52 @@ const hindSiliguri = Hind_Siliguri({
 const ThankYou = () => {
   const searchParams = useSearchParams();
   const { trackEbookDownload } = useTracking();
+  const hasTracked = useRef(false); // Prevent double-firing in development mode
 
   // Extract ebook data from URL parameters
   const ebookId = searchParams.get("id");
   const ebookTitle = searchParams.get("title");
   const ebookPrice = searchParams.get("price");
   const currency = searchParams.get("currency") || "BDT";
-  console.log(ebookId, ebookTitle, ebookPrice, currency);
+
+  console.log("📊 Thank You Page - Ebook Data:", {
+    ebookId,
+    ebookTitle,
+    ebookPrice,
+    currency,
+  });
+
   // Track purchase event when component mounts
   useEffect(() => {
+    // Prevent double-firing (especially in React StrictMode/development)
+    if (hasTracked.current) {
+      console.log("⚠️ Purchase event already tracked, skipping...");
+      return;
+    }
+
     if (ebookId && ebookTitle && ebookPrice) {
       const price = parseFloat(ebookPrice);
       if (!isNaN(price)) {
+        console.log("✅ Firing Purchase event with params:", {
+          ebookId,
+          ebookTitle,
+          price,
+          currency,
+        });
         trackEbookDownload(ebookTitle, ebookId, price, currency);
+        hasTracked.current = true;
+      } else {
+        console.error("❌ Invalid price value:", ebookPrice);
       }
+    } else {
+      console.warn("⚠️ Missing required parameters for Purchase event:", {
+        ebookId: !!ebookId,
+        ebookTitle: !!ebookTitle,
+        ebookPrice: !!ebookPrice,
+      });
     }
-  }, [ebookId, ebookTitle, ebookPrice, currency, trackEbookDownload]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only fire once on mount
 
   return (
     <div

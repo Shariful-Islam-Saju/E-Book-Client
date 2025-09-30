@@ -410,6 +410,22 @@ class TrackingManager {
     const validCurrency =
       currency && currency.length === 3 ? currency.toUpperCase() : "USD";
 
+    // Generate unique event ID to prevent deduplication
+    // Format: ebookId_timestamp_random
+    const eventId = `${ebookId}_${Date.now()}_${Math.random()
+      .toString(36)
+      .substring(2, 9)}`;
+    const timestamp = Math.floor(Date.now() / 1000); // Unix timestamp in seconds
+
+    console.log("🎯 Tracking Purchase Event:", {
+      eventId,
+      ebookTitle,
+      ebookId,
+      value,
+      currency: validCurrency,
+      timestamp: new Date().toISOString(),
+    });
+
     this.trackBoth({
       event: "Purchase",
       parameters: {
@@ -429,6 +445,11 @@ class TrackingManager {
             ]
           : undefined,
         delivery_category: "digital_download",
+        eventID: eventId, // Meta Pixel uses this for deduplication
+        event_id: eventId, // Alternative parameter name
+        event_time: timestamp, // When the event occurred
+        source_url:
+          typeof window !== "undefined" ? window.location.href : undefined,
       },
     });
   }
